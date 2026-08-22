@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+
+{% block title %}Participant Login{% endblock %}
+
+{% block content %}
+<main class="auth-page">
+  <section class="auth-card auth-card-small">
+    <header class="auth-header">
+      <div class="eyebrow">
+        <span class="material-symbols-outlined" aria-hidden="true">person</span>
+        <span>Cognitive Metrics Lab</span>
+      </div>
+      <h1>Participant Login</h1>
+      <p>No password is required. Use the unique username you registered with.</p>
+    </header>
+
+    <form class="form-stack" method="post" action="{{ url_for('login') }}">
+      <div class="field">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" autocomplete="username" required>
+      </div>
+
+      <button class="button button-primary button-full button-large" type="submit">
+        Login
+        <span class="material-symbols-outlined" aria-hidden="true">login</span>
+      </button>
+    </form>
+
+    <p class="auth-switch">
+      New participant? <a href="{{ url_for('register') }}">Register here</a>
+    </p>
+  </section>
+</main>
+{% endblock %}

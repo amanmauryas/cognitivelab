@@ -1,0 +1,135 @@
+{% extends "layout.html" %}
+
+{% block title %}CogniLab Research{% endblock %}
+
+{% block content %}
+<main class="page">
+  <section class="hero">
+    <h1>Measure behavior. Understand cognition.</h1>
+    <p>
+      A research platform for computerized behavioral experiments measuring reaction time,
+      accuracy, attention, inhibition, working memory, and cognitive flexibility.
+    </p>
+    <div class="actions">
+      <a class="button button-primary" href="{{ url_for('register') }}">Participate in a Test</a>
+      <a class="button button-secondary" href="#experiments">Explore Experiments</a>
+    </div>
+  </section>
+
+  <section id="experiments" class="section">
+    <div class="section-header">
+      <h2>Available Experiments</h2>
+    </div>
+
+    <div class="experiment-grid">
+      <article class="experiment-card">
+        <div>
+          <div class="card-header">
+            <h3>Stroop Task</h3>
+            <span class="duration">5-7 mins</span>
+          </div>
+          <p class="category">Cognitive Interference</p>
+          <p>
+            Evaluate interference in reaction time by naming the ink color of a word while
+            ignoring the word meaning.
+          </p>
+        </div>
+        {% if session.get("user_id") %}
+        <a class="button button-primary button-full" href="{{ url_for('stroop.test') }}">
+          Start <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+        </a>
+        {% else %}
+        <a class="button button-primary button-full" href="{{ url_for('register') }}">
+          Start <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+        </a>
+        {% endif %}
+      </article>
+
+      <article class="experiment-card">
+        <div>
+          <div class="card-header">
+            <h3>Flanker Task</h3>
+            <span class="duration">4-6 mins</span>
+          </div>
+          <p class="category">Attention Inhibition</p>
+          <p>
+            Assess the ability to suppress inappropriate responses while focusing on a central
+            target stimulus.
+          </p>
+        </div>
+        <a class="button button-primary button-full" href="{{ url_for('coming_soon') }}">
+            Start <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+        </a>
+      </article>
+
+      <article class="experiment-card">
+        <div>
+          <div class="card-header">
+            <h3>Go/No-Go</h3>
+            <span class="duration">5-8 mins</span>
+          </div>
+          <p class="category">Response Inhibition</p>
+          <p>
+            Measure sustained attention and response control by responding to Go stimuli and
+            withholding responses to No-Go stimuli.
+          </p>
+        </div>
+        <a class="button button-primary button-full" href="{{ url_for('coming_soon') }}">
+          Start <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+        </a>
+      </article>
+
+      <article class="experiment-card">
+        <div>
+          <div class="card-header">
+            <h3>N-Back</h3>
+            <span class="duration">10-15 mins</span>
+          </div>
+          <p class="category">Working Memory</p>
+          <p>
+            Track whether the current stimulus matches one presented N steps earlier to assess
+            working memory capacity.
+          </p>
+        </div>
+        <a class="button button-primary button-full" href="{{ url_for('coming_soon') }}">
+          Start <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+        </a>
+      </article>
+
+      <article class="experiment-card">
+        <div>
+          <div class="card-header">
+            <h3>Reaction Time</h3>
+            <span class="duration">3-5 mins</span>
+          </div>
+          <p class="category">Processing Speed</p>
+          <p>
+            Measure basic motor reaction time as participants respond quickly to a visual
+            stimulus.
+          </p>
+        </div>
+        <a class="button button-primary button-full" href="{{ url_for('coming_soon') }}">
+          Start <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+        </a>
+      </article>
+
+      <article class="experiment-card">
+        <div>
+          <div class="card-header">
+            <h3>Visual Search</h3>
+            <span class="duration">6-10 mins</span>
+          </div>
+          <p class="category">Attentional Focus</p>
+          <p>
+            Evaluate perceptual processing and selective attention by identifying a target among
+            distractors.
+          </p>
+        </div>
+        <a class="button button-primary button-full" href="{{ url_for('coming_soon') }}">
+          Start <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+        </a>
+      </article>
+    </div>
+  </section>
+</main>
+{% endblock %}

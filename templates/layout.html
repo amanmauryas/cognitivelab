@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Behavioral &amp; Cognitive Assessment Lab{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'surface-dim': 'var(--surface-dim)',
+              'surface-bright': 'var(--surface-bright)',
+              'surface-container-lowest': 'var(--surface-container-lowest)',
+              'surface-container-low': 'var(--surface-container-low)',
+              'surface-container': 'var(--surface-container)',
+              'surface-container-high': 'var(--surface-container-high)',
+              'surface-container-highest': 'var(--surface-container-highest)',
+              'on-surface': 'var(--on-surface)',
+              'on-surface-variant': 'var(--on-surface-variant)',
+              'outline': 'var(--outline)',
+              'outline-variant': 'var(--outline-variant)',
+              'primary-container': 'var(--primary-container)',
+              'on-primary-container': 'var(--on-primary-container)',
+              'secondary-container': 'var(--secondary-container)',
+              'on-secondary-container': 'var(--on-secondary-container)',
+              'tertiary-container': 'var(--tertiary-container)',
+              'on-tertiary-container': 'var(--on-tertiary-container)',
+              'primary-fixed-dim': '#123f8c',
+              'inverse-surface': '#2f3033',
+              'inverse-on-surface': '#f1f0f4'
+            },
+            spacing: {
+              'xs': '4px',
+              'sm': '8px',
+              'md': '16px',
+              'lg': '24px',
+              'xl': '32px',
+              'xxl': '48px',
+              'gutter': '24px',
+            },
+            borderRadius: {
+              'DEFAULT': '4px',
+              'sm': '4px',
+              'md': '8px',
+              'lg': '12px',
+              'xl': '16px',
+            }
+          }
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <nav class="site-nav" aria-label="Primary">
+      <div class="nav-inner">
+        <a class="brand" href="{{ url_for('index') }}">Cognitive Metrics Lab</a>
+        <div class="nav-links">
+          <a class="{% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">Home</a>
+          <a href="#experiments">Experiments</a>
+          {% if session.get("username") %}
+            <a class="{% if request.endpoint == 'profile' %}active{% endif %}" href="{{ url_for('profile') }}">Profile</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+          {% else %}
+            <a class="{% if request.endpoint == 'login' %}active{% endif %}" href="{{ url_for('login') }}">Login</a>
+            <a class="{% if request.endpoint == 'register' %}active{% endif %}" href="{{ url_for('register') }}">Register</a>
+          {% endif %}
+          <a href="#">Help</a>
+        </div>
+        
+      </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack" role="status" aria-live="polite">
+          {% for category, message in messages %}
+            <p class="flash flash-{{ category }}">{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </body>
+</html>

@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}Coming Soon{% endblock %}
+
+{% block content %}
+<main class="page flex items-center justify-center min-h-[70vh] px-4">
+  <section class="max-w-md w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-8 md:p-12 shadow-sm text-center">
+    <div class="mb-6 flex justify-center text-primary">
+      <span class="material-symbols-outlined text-6xl" style="font-size: 64px;">construction</span>
+    </div>
+    <h1 class="text-3xl font-extrabold text-on-surface mb-4">Coming Soon</h1>
+    <p class="text-on-surface-variant mb-8 leading-relaxed">
+      This behavioral experiment is currently under active development. Our research team is busy configuring the stimuli, responses, and metrics.
+    </p>
+    <a href="{{ url_for('index') }}" class="button button-primary button-full">
+      Back to Home
+      <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+    </a>
+  </section>
+</main>
+{% endblock %}

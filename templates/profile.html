@@ -1,0 +1,425 @@
+{% extends "layout.html" %} {% block title %}Profile{% endblock %} {% block
+content %}
+
+<main class="page">
+  {# ========================================================= Latest Result
+  Flask query is ordered: created_at DESC Therefore results[0] = latest result
+  ========================================================== #} {% set
+  latest_result = results[0] if results else none %}
+
+  <!-- =====================================================
+         PARTICIPANT HEADER
+    ====================================================== -->
+
+  <section
+    class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg mb-gutter"
+  >
+    <div
+      class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-xl"
+    >
+      <!-- Participant Identity -->
+      <div class="flex items-center gap-lg">
+        <!-- Avatar -->
+        <div
+          class="w-20 h-20 shrink-0 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center text-outline"
+        >
+          <span class="material-symbols-outlined text-[32px]"> person </span>
+        </div>
+
+        <!-- Participant Details -->
+        <div>
+          <div class="flex items-center gap-sm">
+            <h1 class="font-headline-md text-headline-md text-on-surface">
+              {{ session.participant_id }}
+            </h1>
+
+            <span
+              class="bg-secondary-container text-on-secondary-container font-label-caps text-label-caps px-sm py-xs rounded-md"
+            >
+              Active
+            </span>
+          </div>
+
+          <p class="font-body-lg text-body-lg text-on-surface-variant mt-xs">
+            {{ session.username }}
+          </p>
+        
+            <div class="flex items-center gap-sm text-on-surface font-body-sm">
+                <span>Consent Verified (Form v2.1) </span>
+                <span class="material-symbols-outlined text-sm text-green-700">
+                    check_circle
+                </span>
+            </div>
+    
+
+        </div>
+      </div>
+
+      <!-- Participant Statistics -->
+      <div
+        class="grid grid-cols-3 divide-x divide-outline-variant border-t lg:border-t-0 pt-lg lg:pt-0"
+      >
+        <!-- Age -->
+        <div class="px-lg first:pl-0">
+          <span
+            class="font-label-caps text-label-caps text-outline block mb-xs"
+          >
+            Age
+          </span>
+
+          <span class="font-data-mono text-data-mono text-xl text-on-surface">
+            {{ user.age }}
+          </span>
+        </div>
+
+        <!-- Gender -->
+        <div class="px-lg">
+          <span
+            class="font-label-caps text-label-caps text-outline block mb-xs"
+          >
+            Gender
+          </span>
+
+          <span class="font-body-sm text-body-sm font-medium text-on-surface">
+            {{ user.gender | capitalize }}
+          </span>
+        </div>
+
+        <!-- Tests -->
+        <div class="px-lg pr-0">
+          <span
+            class="font-label-caps text-label-caps text-outline block mb-xs"
+          >
+            Tests
+          </span>
+
+          <span class="font-data-mono text-data-mono text-xl text-on-surface">
+            {{ results | length }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================
+         MAIN DASHBOARD GRID
+    ====================================================== -->
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+    <!-- =================================================
+             LATEST RESULTS
+        ================================================== -->
+
+    <section class="lg:col-span-2 space-y-gutter">
+      <!-- Section Header -->
+      <div
+        class="flex items-end justify-between border-b border-outline-variant pb-xs"
+      >
+        <h2 class="font-headline-sm text-headline-sm text-on-surface">
+          Latest Results
+        </h2>
+
+        {% if latest_result %}
+        <span class="font-label-caps text-label-caps text-outline">
+          Latest Test
+        </span>
+        {% endif %}
+      </div>
+
+      {% if latest_result %}
+
+      <!-- Metric Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+        <!-- =========================================
+                     ACCURACY
+                ========================================== -->
+
+        <div
+          class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg min-h-[190px] flex flex-col justify-between"
+        >
+          <!-- Card Header -->
+          <div class="flex items-center justify-between">
+            <span
+              class="font-label-caps text-label-caps text-on-surface-variant"
+            >
+              Accuracy
+            </span>
+
+            <span class="material-symbols-outlined text-outline"> target </span>
+          </div>
+
+          <!-- Metric -->
+          <div class="mt-lg">
+            <div class="flex items-baseline gap-2">
+              <span
+                class="font-data-mono text-on-surface text-5xl font-semibold tracking-tight"
+              >
+                {{ latest_result.accuracy }}
+              </span>
+
+              <span class="font-body-lg text-on-surface-variant"> % </span>
+            </div>
+
+            <p class="font-body-sm text-on-surface-variant mt-xs">
+              Overall response accuracy
+            </p>
+          </div>
+        </div>
+
+        <!-- =========================================
+                     MEAN RESPONSE TIME
+                ========================================== -->
+
+        <div
+          class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg min-h-[190px] flex flex-col justify-between"
+        >
+          <!-- Card Header -->
+          <div class="flex items-center justify-between">
+            <span
+              class="font-label-caps text-label-caps text-on-surface-variant"
+            >
+              Mean Response Time
+            </span>
+
+            <span class="material-symbols-outlined text-outline"> timer </span>
+          </div>
+
+          <!-- Metric -->
+          <div class="mt-lg">
+            <div class="flex items-baseline gap-2">
+              <span
+                class="font-data-mono text-on-surface text-5xl font-semibold tracking-tight"
+              >
+                {{ latest_result.mean_rt|round(2) }}
+              </span>
+
+              <span class="font-body-lg text-on-surface-variant"> ms </span>
+            </div>
+
+            <p class="font-body-sm text-on-surface-variant mt-xs">
+              Average response time
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {% else %}
+
+      <!-- =========================================
+                 NO RESULTS
+            ========================================== -->
+
+      <div
+        class="bg-surface-container-lowest border border-outline-variant rounded-xl p-xl min-h-[190px] flex flex-col items-center justify-center text-center"
+      >
+        <span class="material-symbols-outlined text-outline text-3xl mb-sm">
+          analytics
+        </span>
+
+        <h3 class="font-headline-sm text-on-surface">No Results Yet</h3>
+
+        <p class="font-body-sm text-on-surface-variant mt-xs">
+          Complete an experiment to see performance metrics.
+        </p>
+      </div>
+
+      {% endif %}
+    </section>
+
+    <!-- =================================================
+             META INFORMATION
+        ================================================== -->
+
+    <aside class="space-y-gutter">
+      <!-- Section Header -->
+      <h2
+        class="font-headline-sm text-headline-sm text-on-surface border-b border-outline-variant pb-xs"
+      >
+        Meta Information
+      </h2>
+
+      <!-- Meta Card -->
+      <div
+        class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg space-y-lg">
+        <div>
+          <span class="font-label-caps text-label-caps text-outline block mb-sm">
+            Hardware Setup
+          </span>
+
+          <ul
+            class="font-data-mono text-data-mono text-on-surface-variant space-y-xs"
+          >
+            <li>OS: Windows 11</li>
+
+            <li>Browser: Chrome (Desktop)</li>
+
+            <li>Display: 60Hz</li>
+          </ul>
+        </div>
+        <!-- =========================================
+                     EXPORT
+                ========================================== -->
+
+        <button
+          type="button"
+          class="w-full border border-outline text-on-surface font-label-caps text-label-caps py-sm px-md rounded-lg flex items-center justify-center gap-sm hover:bg-surface-container-high transition-colors"
+        >
+          <span class="material-symbols-outlined text-sm"> download </span>
+
+          Export Participant Data
+        </button>
+      </div>
+    </aside>
+
+    <!-- =================================================
+             EXPERIMENT HISTORY
+        ================================================== -->
+
+    <section class="col-span-1 lg:col-span-3 mt-md">
+      <!-- Table Header -->
+      <div
+        class="flex justify-between items-end border-b border-outline-variant pb-xs mb-md"
+      >
+        <h2 class="font-headline-sm text-headline-sm text-on-surface">
+          Cognitive Experiment History
+        </h2>
+
+        <span class="font-label-caps text-label-caps text-outline">
+          {{ results | length }} test{% if results | length != 1 %}s{% endif %}
+        </span>
+      </div>
+
+      <!-- Table Container -->
+      <div
+        class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-x-auto"
+      >
+        <table class="w-full text-left border-collapse min-w-[700px]">
+          <!-- =====================================
+                         TABLE HEADER
+                    ====================================== -->
+
+          <thead>
+            <tr
+              class="bg-surface-container-low border-b border-outline-variant"
+            >
+              <th
+                class="font-label-caps text-label-caps text-on-surface-variant p-md"
+              >
+                Test Name
+              </th>
+
+              <th
+                class="font-label-caps text-label-caps text-on-surface-variant p-md"
+              >
+                Date Administered
+              </th>
+
+              <th
+                class="font-label-caps text-label-caps text-on-surface-variant p-md"
+              >
+                Accuracy
+              </th>
+
+              <th
+                class="font-label-caps text-label-caps text-on-surface-variant p-md"
+              >
+                Mean RT
+              </th>
+
+              <th
+                class="font-label-caps text-label-caps text-on-surface-variant p-md"
+              >
+                Status
+              </th>
+
+              <th class="p-md w-10"></th>
+            </tr>
+          </thead>
+
+          <!-- =====================================
+                         TABLE BODY
+                    ====================================== -->
+
+          <tbody class="font-data-mono text-data-mono text-on-surface">
+            {% for result in results %}
+
+            <tr
+              class="border-b border-outline-variant hover:bg-surface-container-highest transition-colors cursor-pointer group"
+            >
+              <!-- Test Name -->
+              <td class="p-md font-body-sm font-medium">
+                {{ result.test_name }}
+              </td>
+
+              <!-- Date -->
+              <td class="p-md text-on-surface-variant">
+                {{ result.created_at.strftime('%Y-%m-%d %H:%M') }}
+              </td>
+
+              <!-- Accuracy -->
+              <td class="p-md">{{ result.accuracy }}%</td>
+
+              <!-- Mean RT -->
+              <td class="p-md">{{ result.mean_rt|round(2) }} ms</td>
+
+              <!-- Status -->
+              <td class="p-md">
+                <span
+                  class="inline-flex items-center gap-xs text-[11px] px-2 py-1 rounded bg-secondary-container text-on-secondary-container"
+                >
+                  <span
+                    class="w-1.5 h-1.5 rounded-full bg-on-secondary-container"
+                  >
+                  </span>
+
+                  Completed
+                </span>
+              </td>
+
+              <!-- Open -->
+              <td
+                class="p-md text-outline group-hover:text-primary transition-colors"
+              >
+                <span class="material-symbols-outlined text-sm">
+                  open_in_new
+                </span>
+              </td>
+            </tr>
+
+            {% else %}
+
+            <!-- No History -->
+            <tr>
+              <td
+                colspan="6"
+                class="p-md text-center text-outline font-body-sm py-10"
+              >
+                <div class="flex flex-col items-center justify-center">
+                  <span class="material-symbols-outlined text-3xl mb-sm">
+                    history
+                  </span>
+
+                  <span> No experiment history found. </span>
+
+                  <span class="mt-xs text-xs">
+                    Start a test to see results here.
+                  </span>
+                </div>
+              </td>
+            </tr>
+
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- =====================================================
+         BOTTOM SPACING
+    ====================================================== -->
+
+  <div class="h-lg"></div>
+</main>
+
+{% endblock %}

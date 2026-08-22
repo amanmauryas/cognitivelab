@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+
+{% block title %}Participant Registration{% endblock %}
+
+{% block content %}
+<main class="auth-page">
+  <section class="auth-card">
+    <header class="auth-header">
+      <div class="eyebrow">
+        <span class="material-symbols-outlined" aria-hidden="true">science</span>
+        <span>Cognitive Metrics Lab</span>
+      </div>
+      <h1>Participant Registration</h1>
+      <p>Enter your details once. Your participant ID will be generated automatically.</p>
+    </header>
+
+    <form class="form-stack" method="post" action="{{ url_for('register') }}">
+      <div class="field">
+        <label for="name">Name</label>
+        <input id="name" name="name" type="text" autocomplete="name" required>
+      </div>
+
+      <div class="field">
+        <label for="username">Unique Username</label>
+        <input id="username" name="username" type="text" autocomplete="username" required>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="age">Age</label>
+          <input id="age" name="age" type="number" min="1" max="120" required>
+        </div>
+
+        <div class="field">
+          <label for="gender">Gender</label>
+          <select id="gender" name="gender" required>
+            <option value="">Select gender</option>
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+            <option value="prefer_not_to_say">Prefer not to say</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <label class="check-field">
+        <input name="consent" type="checkbox" value="yes" required>
+        <span>I agree to participate and allow my data to be used according to the study information.</span>
+      </label>
+
+      <button class="button button-primary button-full button-large" type="submit">
+        Register
+        <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+      </button>
+    </form>
+
+    <p class="auth-switch">
+      Already registered? <a href="{{ url_for('login') }}">Login with username</a>
+    </p>
+  </section>
+</main>
+{% endblock %}

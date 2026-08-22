@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}Stroop Test{% endblock %}
+
+{% block content %}
+<main class="page max-w-4xl mx-auto py-12 px-4">
+  <section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-8 md:p-12 shadow-sm">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-outline-variant pb-6 mb-8 gap-4">
+      <div>
+        <p class="text-xs font-bold tracking-widest text-primary uppercase mb-1">Stroop Task</p>
+        <h1 class="text-3xl font-extrabold text-on-surface mb-2">Color-Word Test</h1>
+        <p class="text-sm text-outline">Choose the ink color, not the word meaning.</p>
+      </div>
+      <div class="flex flex-col bg-surface-container-low px-4 py-2.5 rounded-lg border border-outline-variant">
+        <span class="font-data-mono text-sm font-bold text-on-surface">{{ user.participant_id }}</span>
+        <small class="text-xs text-outline font-medium">{{ user.username }}</small>
+      </div>
+    </div>
+
+    <div class="flex flex-col items-center justify-center my-12 py-12 bg-surface-container-low rounded-xl border border-outline-variant min-h-[380px] relative overflow-hidden">
+      <p id="progress" class="text-xs font-semibold text-outline uppercase tracking-wider mb-6 absolute top-6">Press start when ready</p>
+      <div class="flex flex-col items-center justify-center my-8">
+        <div id="stimulus" class="text-5xl md:text-7xl font-extrabold tracking-wide transition-all duration-150 select-none text-on-surface">READY</div>
+        <button id="start-test" class="mt-6 px-8 py-3 bg-primary hover:bg-primary-hover text-white font-bold rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-primary focus:ring-offset-2 cursor-pointer z-20" type="button">Start Test</button>
+      </div>
+      <div id="choice-grid" class="grid grid-cols-2 md:grid-cols-4 gap-3 w-full max-w-lg mt-4 px-4 z-10 opacity-40 pointer-events-none transition-all duration-300">
+        <button class="choice red font-bold py-3 px-4 rounded-lg shadow-sm border transition-all duration-150 font-sans focus:outline-none focus:ring-2 focus:ring-offset-2 border-red-200 bg-red-50 text-red-700 hover:bg-red-100 hover:border-red-300 focus:ring-red-500" data-color="red" type="button">Red</button>
+        <button class="choice blue font-bold py-3 px-4 rounded-lg shadow-sm border transition-all duration-150 font-sans focus:outline-none focus:ring-2 focus:ring-offset-2 border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:border-blue-300 focus:ring-blue-500" data-color="blue" type="button">Blue</button>
+        <button class="choice green font-bold py-3 px-4 rounded-lg shadow-sm border transition-all duration-150 font-sans focus:outline-none focus:ring-2 focus:ring-offset-2 border-green-200 bg-green-50 text-green-700 hover:bg-green-100 hover:border-green-300 focus:ring-green-500" data-color="green" type="button">Green</button>
+        <button class="choice yellow font-bold py-3 px-4 rounded-lg shadow-sm border transition-all duration-150 font-sans focus:outline-none focus:ring-2 focus:ring-offset-2 border-yellow-300 bg-yellow-50 text-yellow-700 hover:bg-yellow-100 hover:border-yellow-400 focus:ring-yellow-600" data-color="yellow" type="button">Yellow</button>
+      </div>
+      <p class="text-xs text-outline mt-6 font-semibold uppercase tracking-wider">Keyboard shortcuts: R, B, G, Y</p>
+    </div>
+
+    <div class="flex justify-center gap-4 mt-8">
+      <a id="profile-link" class="px-8 py-3 border border-outline-variant hover:bg-surface-container-low text-primary font-semibold rounded-lg shadow-sm transition-all hidden" href="{{ url_for('profile') }}">View Profile</a>
+    </div>
+
+    <div id="result-box" class="result-box hidden mt-8 p-6 bg-surface-container-low border border-outline-variant rounded-xl shadow-inner transition-all w-full max-w-2xl mx-auto"></div>
+  </section>
+</main>
+
+<script src="{{ url_for('static', filename='js/stroop.js') }}"></script>
+{% endblock %}
