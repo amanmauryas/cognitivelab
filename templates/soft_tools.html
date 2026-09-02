@@ -1,0 +1,174 @@
+{% extends "layout.html" %}
+
+{% block title %}Clinical Workspace | NeuroMetrics Provider Portal{% endblock %}
+
+{% block content %}
+<main class="page">
+    <section class="hero">
+        <h1>Clinical Assessment & Therapy Toolkit</h1>
+        <p>
+            A centralized, scalable interface for administering psychometric evaluations, computerized cognitive tests,
+            therapeutic worksheets, and AI-assisted behavioral analysis.
+        </p>
+        <div class="actions">
+            <a class="button button-primary" href="#digital-assessments">Browse Clinical Tools</a>
+            <a class="button button-secondary" href="#patient_dashboard#">Patient Analytics</a>
+        </div>
+    </section>
+
+    <section id="digital-assessments" class="section">
+        <div class="section-header">
+            <h2>Standardized Assessment & Evaluation</h2>
+        </div>
+
+        <style>
+            .tool-list {
+                list-style-type: none;
+                padding-left: 0;
+                margin-top: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .tool-list li {
+                margin-bottom: 0.75rem;
+                padding-bottom: 0.75rem;
+                border-bottom: 1px solid #edf2f7;
+            }
+
+            .tool-list li:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+
+            .tool-list a {
+                color: #2b6cb0;
+                text-decoration: none;
+                font-weight: 500;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .tool-list a:hover {
+                color: #1a365d;
+            }
+
+            .tool-badge {
+                font-size: 0.75rem;
+                background: #e2e8f0;
+                color: #4a5568;
+                padding: 0.2rem 0.5rem;
+                border-radius: 4px;
+                text-transform: uppercase;
+                font-weight: 600;
+            }
+
+            .badge-ai {
+                background: #ebf4ff;
+                color: #3182ce;
+            }
+
+            .badge-neuro {
+                background: #e9d8fd;
+                color: #6b46c1;
+            }
+        </style>
+
+        <div class="experiment-grid">
+
+            <!-- Category 1: Symptom Baselines -->
+            <article class="experiment-card">
+                <div>
+                    <div class="card-header">
+                        <h3>Diagnostic Scales</h3>
+                    </div>
+                    <p class="category">Symptom Tracking</p>
+                    <p class="description">Standardized psychometrics for baseline establishment and progress
+                        monitoring.</p>
+                    <ul class="tool-list">
+                        <li><a href="#tool_phq9#">PHQ-9 (Depression) <span
+                                    class="tool-badge">Auto-Scored</span></a></li>
+                        <li><a href="#tool_gad7#">GAD-7 (Anxiety) <span
+                                    class="tool-badge">Auto-Scored</span></a></li>
+                        <li><a href="#tool_ybocs#">Y-BOCS (OCD) <span
+                                    class="tool-badge">Interactive</span></a></li>
+                    </ul>
+                </div>
+                <a class="button button-primary button-full" href="#category_diagnostics#">
+                    Deploy Scale <span class="material-symbols-outlined" aria-hidden="true">send</span>
+                </a>
+            </article>
+
+            <!-- Category 2: Neurocognitive Processing -->
+            <article class="experiment-card">
+                <div>
+                    <div class="card-header">
+                        <h3>Cognitive Tasks</h3>
+                    </div>
+                    <p class="category">Computational Neuroscience</p>
+                    <p class="description">Digital paradigms measuring executive function, working memory, and
+                        inhibition.</p>
+                    <ul class="tool-list">
+                        <li><a href="#task_nback#">N-Back Task <span
+                                    class="tool-badge badge-neuro">Memory</span></a></li>
+                        <li><a href="#task_wcst#">Wisconsin Card Sort <span
+                                    class="tool-badge badge-neuro">Flexibility</span></a></li>
+                        <li><a href="#task_flanker#">Flanker Task <span
+                                    class="tool-badge badge-neuro">Attention</span></a></li>
+                    </ul>
+                </div>
+                <a class="button button-primary button-full" href="#category_cognitive#">
+                    Assign to Patient <span class="material-symbols-outlined" aria-hidden="true">send</span>
+                </a>
+            </article>
+
+            <!-- Category 3: Therapeutic Interventions -->
+            <article class="experiment-card">
+                <div>
+                    <div class="card-header">
+                        <h3>Digital Worksheets</h3>
+                    </div>
+                    <p class="category">CBT & DBT Interventions</p>
+                    <p class="description">Interactive cognitive restructuring and emotional regulation logs.</p>
+                    <ul class="tool-list">
+                        <li><a href="#sheet_cbt_thought#">Interactive Thought Record <span
+                                    class="tool-badge">CBT</span></a></li>
+                        <li><a href="#sheet_dbt_diary#">Daily Diary Card <span
+                                    class="tool-badge">DBT</span></a></li>
+                        <li><a href="#sheet_behavioral#">Behavioral Chain Analysis <span
+                                    class="tool-badge">DBT</span></a></li>
+                    </ul>
+                </div>
+                <a class="button button-primary button-full" href="#category_worksheets#">
+                    Review Submissions <span class="material-symbols-outlined" aria-hidden="true">folder_open</span>
+                </a>
+            </article>
+
+            <!-- Category 4: AI & ML Features -->
+            <article class="experiment-card">
+                <div>
+                    <div class="card-header">
+                        <h3>AI Clinical Assistants</h3>
+                    </div>
+                    <p class="category">Machine Learning Analytics</p>
+                    <p class="description">Advanced analytics for clinical notes, speech sentiment, and session
+                        transcripts.</p>
+                    <ul class="tool-list">
+                        <li><a href="#ai_transcript#">NLP Session Summarizer <span
+                                    class="tool-badge badge-ai">LLM</span></a></li>
+                        <li><a href="#ai_sentiment#">Vocal Affect Tracker <span
+                                    class="tool-badge badge-ai">Audio ML</span></a></li>
+                        <li><a href="#ai_risk#">Risk Marker Extraction <span
+                                    class="tool-badge badge-ai">Predictive</span></a></li>
+                    </ul>
+                </div>
+                <a class="button button-primary button-full" href="#category_ai_tools#">
+                    Open AI Dashboard <span class="material-symbols-outlined" aria-hidden="true">analytics</span>
+                </a>
+            </article>
+
+        </div>
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,196 @@
+{% extends "layout.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+{% set total_sessions = results|length %}
+{% set latest_result = results[0] if results else none %}
+
+<main class="page">
+    <div class="max-w-7xl mx-auto space-y-gutter">
+        <section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-lg">
+                <div class="flex items-center gap-md">
+                    <div
+                        class="w-16 h-16 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[30px] text-outline">admin_panel_settings</span>
+                    </div>
+                    <div>
+                        <h1 class="font-headline-md text-headline-md text-on-surface">Admin Dashboard</h1>
+                        <p class="font-body-sm text-on-surface-variant mt-xs">
+                            Logged in as {{ user.username }}
+                        </p>
+                    </div>
+                </div>
+
+                <span
+                    class="bg-secondary-container text-on-secondary-container px-md py-sm rounded-lg font-label-caps text-label-caps w-fit">
+                    {{ user.role|title }}
+                </span>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-md">
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
+                <span class="font-label-caps text-label-caps text-on-surface-variant">
+                    Total Sessions
+                </span>
+                <div class="mt-md">
+                    <span class="font-data-mono text-4xl font-semibold text-on-surface">
+                        {{ total_sessions }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
+                <span class="font-label-caps text-label-caps text-on-surface-variant">
+                    Latest Test
+                </span>
+                <div class="mt-md">
+                    {% if latest_result %}
+                    <span class="font-body-lg font-semibold text-on-surface">
+                        {{ latest_result.test_type|replace("_", " ")|title }}
+                    </span>
+                    {% else %}
+                    <span class="font-body-lg text-on-surface">-</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
+                <span class="font-label-caps text-label-caps text-on-surface-variant">
+                    Latest Completion
+                </span>
+                <div class="mt-md">
+                    <span class="font-data-mono text-lg text-on-surface">
+                        {% if latest_result and latest_result.completed_at %}
+                        {{ latest_result.completed_at.strftime("%d %b %Y") }}
+                        {% else %}
+                        -
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+            <div class="p-lg border-b border-outline-variant">
+                <h2 class="font-headline-sm text-headline-sm text-on-surface">
+                    All Test Sessions
+                </h2>
+                <p class="font-body-sm text-on-surface-variant mt-xs">
+                    Participant cognitive assessment records
+                </p>
+            </div>
+
+            {% if results %}
+            <div class="divide-y divide-outline-variant">
+                {% for result in results %}
+                <div class="p-lg hover:bg-surface-container-low transition-colors">
+
+                    <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-lg">
+
+                        <div class="space-y-xs">
+                            <h3 class="font-body-lg font-semibold text-on-surface">
+                                {{ result.test_type|replace("_", " ")|title }}
+                            </h3>
+
+                            <div class="font-data-mono text-sm text-on-surface-variant space-y-xs">
+                                <p>
+                                    Participant:
+                                    {{ result.user.participant_id }}
+                                </p>
+
+                                <p>
+                                    Username:
+                                    {{ result.user.username }}
+                                </p>
+
+                                <p>
+                                    Session ID:
+                                    {{ result.id }}
+                                </p>
+
+                                <p>
+                                    Trials:
+                                    {{ result.total_trials }}
+                                </p>
+
+                                {% if result.test_version %}
+                                <p>
+                                    Version:
+                                    {{ result.test_version }}
+                                </p>
+                                {% endif %}
+
+                                <p>
+                                    Started:
+                                    {{ result.started_at.strftime("%d %b %Y, %H:%M") if result.started_at else "-" }}
+                                </p>
+
+                                <p>
+                                    Completed:
+                                    {{ result.completed_at.strftime("%d %b %Y, %H:%M") if result.completed_at else "Not
+                                    completed" }}
+                                </p>
+                            </div>
+                        </div>
+
+                        {% if result.summary_metrics %}
+                        <div class="w-full lg:w-2/3">
+                            <h4 class="font-label-caps text-label-caps text-on-surface-variant mb-sm">
+                                Summary Metrics
+                            </h4>
+
+                            <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-sm">
+                                {% for key, value in result.summary_metrics.items() %}
+                                <div class="bg-surface-container-low border border-outline-variant rounded-lg p-md">
+                                    <span class="font-label-caps text-label-caps text-outline block mb-xs">
+                                        {{ key|replace("_", " ")|title }}
+                                    </span>
+
+                                    <span class="font-data-mono text-lg text-on-surface break-words">
+                                        {% if value is number %}
+                                        {{ value|round(2) }}
+                                        {% else %}
+                                        {{ value }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% else %}
+                        <div
+                            class="lg:w-2/3 flex items-center justify-center min-h-[120px] bg-surface-container-low rounded-lg">
+                            <span class="font-body-sm text-outline">
+                                No summary metrics available
+                            </span>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% else %}
+
+            <div class="min-h-[300px] flex flex-col items-center justify-center text-center p-xl">
+                <span class="material-symbols-outlined text-outline text-5xl mb-md">
+                    database
+                </span>
+
+                <h3 class="font-headline-sm text-on-surface">
+                    No Test Sessions Found
+                </h3>
+
+                <p class="font-body-sm text-on-surface-variant mt-xs">
+                    Completed participant tests will appear here.
+                </p>
+            </div>
+
+            {% endif %}
+        </section>
+
+    </div>
+</main>
+{% endblock %}

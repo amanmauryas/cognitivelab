@@ -1,0 +1,317 @@
+{% extends "layout.html" %}
+{% block title %}Users{% endblock %}
+{% block content %}
+{% set total_users = users|length %}
+{% set admins = users|selectattr("role", "equalto", "admin")|list %}
+{% set psychologists = users|selectattr("role", "equalto", "psychologist")|list %}
+{% set participants = users|selectattr("role", "equalto", "user")|list %}
+
+<main class="page">
+    <div class="max-w-7xl mx-auto space-y-gutter">
+
+        <section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-lg">
+                <div class="flex items-center gap-md">
+                    <div
+                        class="w-16 h-16 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[30px] text-outline">group</span>
+                    </div>
+
+                    <div>
+                        <h1 class="font-headline-md text-headline-md text-on-surface">
+                            User Management
+                        </h1>
+                        <p class="font-body-sm text-on-surface-variant mt-xs">
+                            Manage registered users and participant accounts
+                        </p>
+                    </div>
+                </div>
+
+                <span
+                    class="bg-secondary-container text-on-secondary-container px-md py-sm rounded-lg font-label-caps text-label-caps w-fit">
+                    {{ total_users }} Users
+                </span>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
+
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
+                <div class="flex items-center justify-between">
+                    <span class="font-label-caps text-label-caps text-on-surface-variant">
+                        Total Users
+                    </span>
+                    <span class="material-symbols-outlined text-outline">
+                        group
+                    </span>
+                </div>
+
+                <div class="mt-lg">
+                    <span class="font-data-mono text-4xl font-semibold text-on-surface">
+                        {{ total_users }}
+                    </span>
+                    <p class="font-body-sm text-on-surface-variant mt-xs">
+                        Registered accounts
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
+                <div class="flex items-center justify-between">
+                    <span class="font-label-caps text-label-caps text-on-surface-variant">
+                        Participants
+                    </span>
+                    <span class="material-symbols-outlined text-outline">
+                        person
+                    </span>
+                </div>
+
+                <div class="mt-lg">
+                    <span class="font-data-mono text-4xl font-semibold text-on-surface">
+                        {{ participants|length }}
+                    </span>
+                    <p class="font-body-sm text-on-surface-variant mt-xs">
+                        Test participants
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
+                <div class="flex items-center justify-between">
+                    <span class="font-label-caps text-label-caps text-on-surface-variant">
+                        Psychologists
+                    </span>
+                    <span class="material-symbols-outlined text-outline">
+                        psychology
+                    </span>
+                </div>
+
+                <div class="mt-lg">
+                    <span class="font-data-mono text-4xl font-semibold text-on-surface">
+                        {{ psychologists|length }}
+                    </span>
+                    <p class="font-body-sm text-on-surface-variant mt-xs">
+                        Professional accounts
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
+                <div class="flex items-center justify-between">
+                    <span class="font-label-caps text-label-caps text-on-surface-variant">
+                        Administrators
+                    </span>
+                    <span class="material-symbols-outlined text-outline">
+                        admin_panel_settings
+                    </span>
+                </div>
+
+                <div class="mt-lg">
+                    <span class="font-data-mono text-4xl font-semibold text-on-surface">
+                        {{ admins|length }}
+                    </span>
+                    <p class="font-body-sm text-on-surface-variant mt-xs">
+                        System administrators
+                    </p>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+
+            <div
+                class="flex flex-col md:flex-row md:items-center md:justify-between gap-md p-lg border-b border-outline-variant">
+                <div>
+                    <h2 class="font-headline-sm text-headline-sm text-on-surface">
+                        Registered Users
+                    </h2>
+                    <p class="font-body-sm text-on-surface-variant mt-xs">
+                        Complete list of registered platform users
+                    </p>
+                </div>
+
+                <span class="font-label-caps text-label-caps text-outline">
+                    {{ total_users }} Record{% if total_users != 1 %}s{% endif %}
+                </span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[1100px]">
+
+                    <thead>
+                        <tr class="bg-surface-container-low border-b border-outline-variant">
+                            <th class="font-label-caps text-label-caps text-on-surface-variant p-md">
+                                User
+                            </th>
+
+                            <th class="font-label-caps text-label-caps text-on-surface-variant p-md">
+                                Participant ID
+                            </th>
+
+                            <th class="font-label-caps text-label-caps text-on-surface-variant p-md">
+                                Role
+                            </th>
+
+                            <th class="font-label-caps text-label-caps text-on-surface-variant p-md">
+                                Age
+                            </th>
+
+                            <th class="font-label-caps text-label-caps text-on-surface-variant p-md">
+                                Gender
+                            </th>
+
+                            <th class="font-label-caps text-label-caps text-on-surface-variant p-md">
+                                Tests
+                            </th>
+
+                            <th class="font-label-caps text-label-caps text-on-surface-variant p-md">
+                                Joined
+                            </th>
+
+                            <th class="font-label-caps text-label-caps text-on-surface-variant p-md text-right">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="font-data-mono text-data-mono text-on-surface">
+
+                        {% for participant in users %}
+
+                        <tr
+                            class="border-b last:border-b-0 border-outline-variant hover:bg-surface-container-low transition-colors">
+
+                            <td class="p-md">
+                                <div class="flex items-center gap-sm">
+
+                                    <div
+                                        class="w-9 h-9 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center shrink-0">
+                                        <span class="material-symbols-outlined text-sm text-outline">
+                                            person
+                                        </span>
+                                    </div>
+
+                                    <div>
+                                        <span class="font-body-sm font-medium text-on-surface block">
+                                            {{ participant.name }}
+                                        </span>
+
+                                        <span class="text-xs text-outline">
+                                            @{{ participant.username }}
+                                        </span>
+                                    </div>
+
+                                </div>
+                            </td>
+
+                            <td class="p-md">
+                                <span class="text-on-surface">
+                                    {{ participant.participant_id }}
+                                </span>
+                            </td>
+
+                            <td class="p-md">
+
+                                {% if participant.role == "admin" %}
+                                <span
+                                    class="inline-flex items-center gap-xs px-sm py-xs rounded-md bg-secondary-container text-on-secondary-container text-xs">
+                                    <span class="material-symbols-outlined text-[14px]">
+                                        admin_panel_settings
+                                    </span>
+                                    Admin
+                                </span>
+
+                                {% elif participant.role == "psychologist" %}
+                                <span
+                                    class="inline-flex items-center gap-xs px-sm py-xs rounded-md bg-primary-container text-on-primary-container text-xs">
+                                    <span class="material-symbols-outlined text-[14px]">
+                                        psychology
+                                    </span>
+                                    Psychologist
+                                </span>
+
+                                {% else %}
+                                <span
+                                    class="inline-flex items-center gap-xs px-sm py-xs rounded-md bg-surface-container-high text-on-surface-variant text-xs">
+                                    <span class="material-symbols-outlined text-[14px]">
+                                        person
+                                    </span>
+                                    Participant
+                                </span>
+                                {% endif %}
+
+                            </td>
+
+                            <td class="p-md">
+                                {{ participant.age }}
+                            </td>
+
+                            <td class="p-md text-on-surface-variant">
+                                {{ participant.gender|replace("_", " ")|title }}
+                            </td>
+
+                            <td class="p-md">
+                                {{ participant.test_sessions|length }}
+                            </td>
+
+                            <td class="p-md text-on-surface-variant">
+                                {{ participant.created_at.strftime("%d %b %Y") if participant.created_at else "-" }}
+                            </td>
+
+                            <td class="p-md text-right">
+
+                                {% if participant.id != user.id %}
+                                <form action="{{ url_for('admin.delete_user', user_id=participant.id) }}" method="POST"
+                                    onsubmit="return confirm('Are you sure you want to permanently delete this user and all associated test data?');">
+                                    <button type="submit"
+                                        class="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-error text-error hover:bg-error-container transition-colors">
+                                        <span class="material-symbols-outlined text-lg">delete</span>
+                                    </button>
+                                </form>
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+                            <td colspan="8" class="py-20 text-center">
+
+                                <div class="flex flex-col items-center justify-center">
+
+                                    <div
+                                        class="w-14 h-14 rounded-full bg-surface-container-low flex items-center justify-center mb-md">
+                                        <span class="material-symbols-outlined text-3xl text-outline">
+                                            group_off
+                                        </span>
+                                    </div>
+
+                                    <h3 class="font-headline-sm text-on-surface">
+                                        No Users Found
+                                    </h3>
+
+                                    <p class="font-body-sm text-on-surface-variant mt-xs">
+                                        Registered users will appear here.
+                                    </p>
+
+                                </div>
+
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </section>
+
+    </div>
+
+</main>
+{% endblock %}

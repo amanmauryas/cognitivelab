@@ -63,24 +63,48 @@
     </script>
   </head>
   <body>
-    <nav class="site-nav" aria-label="Primary">
-      <div class="nav-inner">
-        <a class="brand" href="{{ url_for('index') }}">Cognitive Metrics Lab</a>
-        <div class="nav-links">
-          <a class="{% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">Home</a>
-          <a href="#experiments">Experiments</a>
-          {% if session.get("username") %}
+      <nav class="site-nav" aria-label="Primary">
+        <div class="nav-inner">
+          <a class="brand" href="{{ url_for('index') }}">Cognitive Metrics Lab</a>
+          <div class="nav-links">
+      
+            {# 1. ADMIN NAVBAR #}
+            {% if session.get("role") == "admin" %}
+            <a class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}"
+              href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin.users') }}">Users</a>
+            <a href="#">User Details</a>
+            <a href="#">System Logs</a>
+      
+            {# 2. PSYCHOLOGIST NAVBAR #}
+            {% elif session.get("role") == "psychologist" %}
+            <a class="{% if request.endpoint == 'psychologist.dashboard' %}active{% endif %}" href="#">Internal Management</a>
+            <a href="#">Assessments</a>
+            <a href="#">Participant Data</a>
             <a class="{% if request.endpoint == 'profile' %}active{% endif %}" href="{{ url_for('profile') }}">Profile</a>
+
+            {# 3. NORMAL USER / GUEST NAVBAR #}
+            {% elif session.get("role") == "user" %}
+            <a class="{% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">Home</a>
+            <a href="#experiments">Experiments</a>
+            <a class="{% if request.endpoint == 'profile' %}active{% endif %}" href="{{ url_for('profile') }}">Profile</a>
+            {% endif %}
+      
+            {# COMMON AUTH LINKS FOR LOGGED IN USERS #}
+            {% if session.get("username") %}
+            
             <a href="{{ url_for('logout') }}">Logout</a>
-          {% else %}
+            {% else %}
             <a class="{% if request.endpoint == 'login' %}active{% endif %}" href="{{ url_for('login') }}">Login</a>
             <a class="{% if request.endpoint == 'register' %}active{% endif %}" href="{{ url_for('register') }}">Register</a>
-          {% endif %}
-          <a href="#">Help</a>
+            {% endif %}
+      
+            <a href="#">Help</a>
+            <a href="{{ url_for('soft_tools') }}">Switch</a>
+          </div>
         </div>
-        
-      </div>
-    </nav>
+      </nav>
+
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}

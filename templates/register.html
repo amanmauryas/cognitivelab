@@ -32,6 +32,15 @@
         </div>
 
         <div class="field">
+          <label for="role">Role</label>
+          <select id="role" name="role" required>
+            <option value="">Select Role</option>
+            <option value="user">Participant</option>
+            <option value="psychologist">Psychologist</option>
+          </select>
+        </div>
+
+        <div class="field">
           <label for="gender">Gender</label>
           <select id="gender" name="gender" required>
             <option value="">Select gender</option>
@@ -41,6 +50,11 @@
             <option value="other">Other</option>
           </select>
         </div>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required>
       </div>
 
       <label class="check-field">
