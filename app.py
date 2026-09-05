@@ -1,10 +1,7 @@
 from __future__ import annotations
 
-import os
-import webbrowser
 from datetime import datetime
 from pathlib import Path
-from threading import Timer
 
 from flask import (
     Flask,
@@ -338,7 +335,4 @@ def create_app() -> Flask:
 
 if __name__ == "__main__":
     app = create_app()
-    url = "http://127.0.0.1:5000/"
-    if os.environ.get("WERKZEUG_RUN_MAIN") != "true":
-        Timer(1, lambda: webbrowser.open(url)).start()
     app.run(debug=True)
