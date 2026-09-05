@@ -335,4 +335,8 @@ def create_app() -> Flask:
 
 if __name__ == "__main__":
     app = create_app()
+<<<<<<< HEAD
     app.run(debug=True)
+=======
+    app.run()
+>>>>>>> 6a7b3c8da9175664f4039cb481436329f358747e
