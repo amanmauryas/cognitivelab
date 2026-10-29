@@ -1,21 +1,17 @@
 {% extends "layout.html" %}
-
-{% block title %}Coming Soon{% endblock %}
-
+{% block title %}Coming Soon — NeuroTrack{% endblock %}
 {% block content %}
-<main class="page flex items-center justify-center min-h-[70vh] px-4">
-  <section class="max-w-md w-full bg-surface-container-lowest border border-outline-variant rounded-xl p-8 md:p-12 shadow-sm text-center">
-    <div class="mb-6 flex justify-center text-primary">
-      <span class="material-symbols-outlined text-6xl" style="font-size: 64px;">construction</span>
-    </div>
-    <h1 class="text-3xl font-extrabold text-on-surface mb-4">Coming Soon</h1>
-    <p class="text-on-surface-variant mb-8 leading-relaxed">
-      This behavioral experiment is currently under active development. Our research team is busy configuring the stimuli, responses, and metrics.
+<div style="display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 60px);padding:48px 24px;">
+  <div class="nt-card-flat" style="max-width:480px;width:100%;text-align:center;padding:48px 40px;">
+    <span class="material-symbols-outlined" style="font-size:56px;color:var(--nt-blue);display:block;margin-bottom:20px;">construction</span>
+    <h1 style="font-size:28px;font-weight:800;color:var(--nt-navy);margin:0 0 12px;">Coming Soon</h1>
+    <p style="font-size:14px;color:var(--nt-muted);line-height:1.7;margin:0 0 32px;">
+      This behavioral paradigm is under active development. Our research team is configuring stimuli, response protocols, and scoring metrics.
     </p>
-    <a href="{{ url_for('index') }}" class="button button-primary button-full">
+    <a href="{{ url_for('index') }}" class="nt-btn nt-btn-primary nt-btn-full">
+      <span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>
       Back to Home
-      <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
     </a>
-  </section>
-</main>
+  </div>
+</div>
 {% endblock %}

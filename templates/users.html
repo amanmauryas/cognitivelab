@@ -4,7 +4,7 @@
 {% set total_users = users|length %}
 {% set admins = users|selectattr("role", "equalto", "admin")|list %}
 {% set psychologists = users|selectattr("role", "equalto", "psychologist")|list %}
-{% set participants = users|selectattr("role", "equalto", "user")|list %}
+{% set participants = users|selectattr("role", "in", ["patient", "user"])|list %}
 
 <main class="page">
     <div class="max-w-7xl mx-auto space-y-gutter">

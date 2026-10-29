@@ -1,48 +1,37 @@
 {% extends "layout.html" %}
-
-{% block title %}Participant Registration{% endblock %}
-
+{% block title %}Register — NeuroTrack{% endblock %}
 {% block content %}
-<main class="auth-page">
-  <section class="auth-card">
-    <header class="auth-header">
-      <div class="eyebrow">
-        <span class="material-symbols-outlined" aria-hidden="true">science</span>
-        <span>Cognitive Metrics Lab</span>
-      </div>
-      <h1>Participant Registration</h1>
-      <p>Enter your details once. Your participant ID will be generated automatically.</p>
-    </header>
+<div class="nt-auth-page" style="padding:40px 24px;">
+  <div class="nt-auth-card" style="max-width:640px;">
+    <p class="nt-eyebrow" style="margin-bottom:12px;">Cognitive Metrics Lab</p>
+    <h1>Participant Registration</h1>
+    <p class="subtitle">Enter your details once. Your participant ID will be generated automatically.</p>
 
-    <form class="form-stack" method="post" action="{{ url_for('register') }}">
-      <div class="field">
-        <label for="name">Name</label>
-        <input id="name" name="name" type="text" autocomplete="name" required>
+    <form method="post" action="{{ url_for('register') }}" style="display:grid;gap:18px;">
+      <div class="nt-field">
+        <label for="name">Full Name</label>
+        <input class="nt-input" id="name" name="name" type="text" autocomplete="name" placeholder="Your name" required>
       </div>
-
-      <div class="field">
-        <label for="username">Unique Username</label>
-        <input id="username" name="username" type="text" autocomplete="username" required>
+      <div class="nt-field">
+        <label for="username">Username</label>
+        <input class="nt-input" id="username" name="username" type="text" autocomplete="username" placeholder="unique_handle" required>
       </div>
-
-      <div class="form-grid">
-        <div class="field">
+      <div class="nt-form-grid">
+        <div class="nt-field">
           <label for="age">Age</label>
-          <input id="age" name="age" type="number" min="1" max="120" required>
+          <input class="nt-input" id="age" name="age" type="number" min="1" max="120" placeholder="25" required>
         </div>
-
-        <div class="field">
+        <div class="nt-field">
           <label for="role">Role</label>
-          <select id="role" name="role" required>
-            <option value="">Select Role</option>
-            <option value="user">Participant</option>
+          <select class="nt-input" id="role" name="role" required>
+            <option value="">Select role</option>
+            <option value="patient">Patient</option>
             <option value="psychologist">Psychologist</option>
           </select>
         </div>
-
-        <div class="field">
+        <div class="nt-field">
           <label for="gender">Gender</label>
-          <select id="gender" name="gender" required>
+          <select class="nt-input" id="gender" name="gender" required>
             <option value="">Select gender</option>
             <option value="female">Female</option>
             <option value="male">Male</option>
@@ -51,26 +40,22 @@
           </select>
         </div>
       </div>
-
-      <div class="field">
+      <div class="nt-field">
         <label for="password">Password</label>
-        <input id="password" name="password" type="password" required>
+        <input class="nt-input" id="password" name="password" type="password" placeholder="Create a secure password" required>
       </div>
-
-      <label class="check-field">
+      <label class="nt-consent-box">
         <input name="consent" type="checkbox" value="yes" required>
-        <span>I agree to participate and allow my data to be used according to the study information.</span>
+        <span>I agree to participate and allow my anonymised data to be used for behavioural and cognitive research.</span>
       </label>
-
-      <button class="button button-primary button-full button-large" type="submit">
-        Register
-        <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+      <button class="nt-btn nt-btn-primary nt-btn-full" type="submit">
+        <span class="material-symbols-outlined" style="font-size:16px">person_add</span>
+        Create Account
       </button>
     </form>
-
-    <p class="auth-switch">
-      Already registered? <a href="{{ url_for('login') }}">Login with username</a>
+    <p class="nt-auth-switch">
+      Already registered? <a href="{{ url_for('login') }}">Sign in</a>
     </p>
-  </section>
-</main>
+  </div>
+</div>
 {% endblock %}

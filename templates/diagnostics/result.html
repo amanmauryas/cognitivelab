@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block title %}{{ result.scale_title }} — Result — NeuroTrack{% endblock %}
+{% block content %}
+<div class="nt-page-sm">
+  <div style="padding-top:40px;">
+    <a class="nt-back" href="{{ url_for('diagnostics.index') }}">
+      <span class="material-symbols-outlined" style="font-size:16px">arrow_back</span> Back to Scales
+    </a>
+
+    <div class="nt-card-flat" style="padding:36px;">
+      <!-- Header -->
+      <div style="text-align:center;padding-bottom:28px;border-bottom:1px solid var(--nt-border);margin-bottom:32px;">
+        <span class="nt-badge nt-badge-green" style="margin-bottom:12px;">Assessment Completed</span>
+        <h1 style="font-size:26px;font-weight:800;color:var(--nt-navy);margin:0 0 6px;">{{ result.scale_title }}</h1>
+        <p style="font-size:13px;color:var(--nt-muted);margin:0;">
+          Completed for participant
+          <span style="font-family:var(--font-mono);font-weight:700;color:var(--nt-navy);">{{ user.participant_id }}</span>
+        </p>
+      </div>
+
+      <!-- Score cards -->
+      <div class="nt-score-grid" style="margin-bottom:28px;">
+        <div class="nt-score-box highlight">
+          <span class="label">Total Score</span>
+          <span class="value">{{ result.total_score }}</span>
+          <span class="sub">out of {{ result.max_score }}</span>
+        </div>
+        <div class="nt-score-box">
+          <span class="label">Percentage</span>
+          <span class="value">{{ result.percentage }}%</span>
+          <span class="sub">severity scale</span>
+        </div>
+        <div class="nt-score-box">
+          <span class="label">Classification</span>
+          <span class="value" style="font-size:22px;margin-top:6px;">{{ result.interpretation }}</span>
+        </div>
+      </div>
+
+      <!-- Disclaimer -->
+      <div class="nt-instructions" style="margin-bottom:28px;">
+        <strong>Research Disclaimer:</strong> {{ result.disclaimer }}
+      </div>
+
+      <!-- Item breakdown -->
+      <h2 style="font-size:16px;font-weight:700;color:var(--nt-navy);margin:0 0 12px;">Item Breakdown</h2>
+      <div style="display:grid;gap:8px;margin-bottom:32px;">
+        {% for item in result.item_breakdown %}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--nt-gray-bg);border:1px solid var(--nt-border);border-radius:9px;font-size:13px;gap:12px;">
+          <div>
+            <span style="font-weight:700;color:var(--nt-teal);margin-right:6px;">#{{ item.number }}</span>
+            <span style="color:var(--nt-text);">{{ item.question_text }}</span>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <span style="font-weight:600;color:var(--nt-navy);">{{ item.label }}</span>
+            <span style="font-size:11px;color:var(--nt-muted);display:block;">({{ item.value }} pts)</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-top:20px;border-top:1px solid var(--nt-border);">
+        <a href="{{ url_for('diagnostics.index') }}" class="nt-btn nt-btn-secondary">Back to Catalog</a>
+        <a href="{{ url_for('profile') }}" class="nt-btn nt-btn-primary">View Profile</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

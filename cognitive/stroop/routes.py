@@ -1,7 +1,8 @@
 from datetime import datetime
 from flask import flash, jsonify, redirect, render_template, request, session, url_for
 
-from core.database import User, TestSession, TestTrial, db
+from core.database import db
+from models import TestSession, TestTrial, User
 from . import stroop_bp
 
 
@@ -21,7 +22,11 @@ def test():
         flash("User not found.", "error")
         return redirect(url_for("login"))
 
-    return render_template("index.html", user=user)
+    if user.role not in {"patient", "user"}:
+        flash("Cognitive tasks are completed through a patient account.", "error")
+        return redirect(url_for("index"))
+
+    return render_template("test.html", user=user)
 
 
 @stroop_bp.route("/test/stroop/result", methods=["POST"])
@@ -30,6 +35,10 @@ def save_test_result():
 
     if not user_id:
         return jsonify({"saved": False, "error": "Login required"}), 401
+
+    user = db.session.get(User, user_id)
+    if not user or user.role not in {"patient", "user"}:
+        return jsonify({"saved": False, "error": "Patient access required"}), 403
 
     data = request.get_json()
 

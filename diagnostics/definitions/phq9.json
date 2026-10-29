@@ -1,0 +1,127 @@
+{
+    "id": "phq9",
+    "name": "PHQ-9",
+    "title": "Patient Health Questionnaire-9",
+    "version": "1.0",
+    "type": "diagnostic_scale",
+    "category": "Depression symptoms",
+    "description": "A 9-item questionnaire assessing depressive symptoms over the past two weeks.",
+    "instructions": {
+        "text": "Over the last 2 weeks, how often have you been bothered by any of the following problems?",
+        "timeframe": "past_2_weeks"
+    },
+    "response_scale": [
+        {
+            "value": 0,
+            "label": "Not at all"
+        },
+        {
+            "value": 1,
+            "label": "Several days"
+        },
+        {
+            "value": 2,
+            "label": "More than half the days"
+        },
+        {
+            "value": 3,
+            "label": "Nearly every day"
+        }
+    ],
+    "questions": [
+        {
+            "id": "phq9_01",
+            "number": 1,
+            "text": "Little interest or pleasure in doing things",
+            "response_type": "single_choice"
+        },
+        {
+            "id": "phq9_02",
+            "number": 2,
+            "text": "Feeling down, depressed, or hopeless",
+            "response_type": "single_choice"
+        },
+        {
+            "id": "phq9_03",
+            "number": 3,
+            "text": "Trouble falling or staying asleep, or sleeping too much",
+            "response_type": "single_choice"
+        },
+        {
+            "id": "phq9_04",
+            "number": 4,
+            "text": "Feeling tired or having little energy",
+            "response_type": "single_choice"
+        },
+        {
+            "id": "phq9_05",
+            "number": 5,
+            "text": "Poor appetite or overeating",
+            "response_type": "single_choice"
+        },
+        {
+            "id": "phq9_06",
+            "number": 6,
+            "text": "Feeling bad about yourself — or that you are a failure or have let yourself or your family down",
+            "response_type": "single_choice"
+        },
+        {
+            "id": "phq9_07",
+            "number": 7,
+            "text": "Trouble concentrating on things, such as reading the newspaper or watching television",
+            "response_type": "single_choice"
+        },
+        {
+            "id": "phq9_08",
+            "number": 8,
+            "text": "Moving or speaking so slowly that other people could have noticed? Or the opposite — being so fidgety or restless that you have been moving around a lot more than usual",
+            "response_type": "single_choice"
+        },
+        {
+            "id": "phq9_09",
+            "number": 9,
+            "text": "Thoughts that you would be better off dead, or of hurting yourself in some way",
+            "response_type": "single_choice"
+        }
+    ],
+    "scoring": {
+        "method": "sum",
+        "min_score": 0,
+        "max_score": 27,
+        "interpretation": [
+            {
+                "min": 0,
+                "max": 4,
+                "label": "Minimal depression"
+            },
+            {
+                "min": 5,
+                "max": 9,
+                "label": "Mild depression"
+            },
+            {
+                "min": 10,
+                "max": 14,
+                "label": "Moderate depression"
+            },
+            {
+                "min": 15,
+                "max": 19,
+                "label": "Moderately severe depression"
+            },
+            {
+                "min": 20,
+                "max": 27,
+                "label": "Severe depression"
+            }
+        ]
+    },
+    "report": {
+        "title": "PHQ-9 Assessment Report",
+        "include": [
+            "total_score",
+            "response_summary",
+            "interpretation"
+        ]
+    }
+}

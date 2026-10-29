@@ -1,37 +1,30 @@
 {% extends "layout.html" %}
-
-{% block title %}Participant Login{% endblock %}
-
+{% block title %}Login — NeuroTrack{% endblock %}
 {% block content %}
-<main class="auth-page">
-  <section class="auth-card auth-card-small">
-    <header class="auth-header">
-      <div class="eyebrow">
-        <span class="material-symbols-outlined" aria-hidden="true">person</span>
-        <span>Cognitive Metrics Lab</span>
-      </div>
-      <h1>Participant Login</h1>
-      <p>No password is required. Use the unique username you registered with.</p>
-    </header>
+<div class="nt-auth-page">
+  <div class="nt-auth-card">
+    <p class="nt-eyebrow" style="margin-bottom:12px;">Cognitive Metrics Lab</p>
+    <h1>Welcome back</h1>
+    <p class="subtitle">Sign in with your registered username and password.</p>
 
-    <form class="form-stack" method="post" action="{{ url_for('login') }}">
-      <div class="field">
+    <form method="post" action="{{ url_for('login') }}" style="display:grid;gap:18px;">
+      <div class="nt-field">
         <label for="username">Username</label>
-        <input id="username" name="username" type="text" autocomplete="username" required>
+        <input class="nt-input" id="username" name="username" type="text" autocomplete="username" placeholder="your_username" required>
       </div>
-      <div class="field">
+      <div class="nt-field">
         <label for="password">Password</label>
-        <input id="password" name="password" type="password" required>
+        <input class="nt-input" id="password" name="password" type="password" placeholder="••••••••" required>
       </div>
-      <button class="button button-primary button-full button-large" type="submit">
-        Login
-        <span class="material-symbols-outlined" aria-hidden="true">login</span>
+      <button class="nt-btn nt-btn-primary nt-btn-full" type="submit" style="margin-top:4px;">
+        <span class="material-symbols-outlined" style="font-size:16px">login</span>
+        Sign In
       </button>
     </form>
 
-    <p class="auth-switch">
-      New participant? <a href="{{ url_for('register') }}">Register here</a>
+    <p class="nt-auth-switch">
+      No account? <a href="{{ url_for('register') }}">Register as participant</a>
     </p>
-  </section>
-</main>
+  </div>
+</div>
 {% endblock %}

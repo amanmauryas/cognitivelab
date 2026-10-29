@@ -1,1 +1,1 @@
-"""Tests domain package containing individual cognitive task blueprints."""
+"""Automated test suite package for cognitive tasks and diagnostics."""

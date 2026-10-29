@@ -1,196 +1,339 @@
 {% extends "layout.html" %}
 {% block title %}Admin Dashboard{% endblock %}
 {% block content %}
-{% set total_sessions = results|length %}
-{% set latest_result = results[0] if results else none %}
+<main class="page max-w-7xl mx-auto py-8 px-4 space-y-8">
 
-<main class="page">
-    <div class="max-w-7xl mx-auto space-y-gutter">
-        <section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-lg">
-                <div class="flex items-center gap-md">
-                    <div
-                        class="w-16 h-16 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[30px] text-outline">admin_panel_settings</span>
-                    </div>
-                    <div>
-                        <h1 class="font-headline-md text-headline-md text-on-surface">Admin Dashboard</h1>
-                        <p class="font-body-sm text-on-surface-variant mt-xs">
-                            Logged in as {{ user.username }}
-                        </p>
-                    </div>
+    <!-- Header Section -->
+    <section class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 md:p-8 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center">
+                    <span class="material-symbols-outlined text-3xl">admin_panel_settings</span>
                 </div>
-
-                <span
-                    class="bg-secondary-container text-on-secondary-container px-md py-sm rounded-lg font-label-caps text-label-caps w-fit">
-                    {{ user.role|title }}
-                </span>
-            </div>
-        </section>
-
-        <section class="grid grid-cols-1 md:grid-cols-3 gap-md">
-            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
-                <span class="font-label-caps text-label-caps text-on-surface-variant">
-                    Total Sessions
-                </span>
-                <div class="mt-md">
-                    <span class="font-data-mono text-4xl font-semibold text-on-surface">
-                        {{ total_sessions }}
-                    </span>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-on-surface">Admin Control Center</h1>
+                    <p class="text-sm text-outline mt-1">Logged in as <strong class="text-on-surface">{{ user.username }}</strong> · Full database write & delete permissions</p>
                 </div>
             </div>
 
-            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
-                <span class="font-label-caps text-label-caps text-on-surface-variant">
-                    Latest Test
-                </span>
-                <div class="mt-md">
-                    {% if latest_result %}
-                    <span class="font-body-lg font-semibold text-on-surface">
-                        {{ latest_result.test_type|replace("_", " ")|title }}
-                    </span>
-                    {% else %}
-                    <span class="font-body-lg text-on-surface">-</span>
-                    {% endif %}
-                </div>
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="{{ url_for('admin.users') }}" class="button button-secondary text-sm font-semibold px-4 py-2">
+                    Manage Users ({{ collection_summary.total_users }})
+                </a>
+                <a href="{{ url_for('admin.export_sessions') }}" class="button button-secondary text-sm font-semibold px-4 py-2">
+                    Export Cognitive CSV
+                </a>
+                <a href="{{ url_for('admin.export_diagnostics') }}" class="button button-secondary text-sm font-semibold px-4 py-2">
+                    Export Diagnostics CSV
+                </a>
             </div>
+        </div>
+    </section>
 
-            <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-lg">
-                <span class="font-label-caps text-label-caps text-on-surface-variant">
-                    Latest Completion
-                </span>
-                <div class="mt-md">
-                    <span class="font-data-mono text-lg text-on-surface">
-                        {% if latest_result and latest_result.completed_at %}
-                        {{ latest_result.completed_at.strftime("%d %b %Y") }}
-                        {% else %}
-                        -
-                        {% endif %}
-                    </span>
-                </div>
-            </div>
-        </section>
+    <!-- Metrics KPI Cards -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm">
+            <span class="text-xs font-bold uppercase tracking-wider text-outline block mb-1">Participants</span>
+            <span class="font-data-mono text-3xl md:text-4xl font-extrabold text-on-surface">{{ collection_summary.patients }}</span>
+            <span class="text-xs text-outline block mt-1">Registered patients</span>
+        </div>
 
-        <section class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
-            <div class="p-lg border-b border-outline-variant">
-                <h2 class="font-headline-sm text-headline-sm text-on-surface">
-                    All Test Sessions
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm">
+            <span class="text-xs font-bold uppercase tracking-wider text-outline block mb-1">Cognitive Sessions</span>
+            <span class="font-data-mono text-3xl md:text-4xl font-extrabold text-primary">{{ collection_summary.completed_sessions }}</span>
+            <span class="text-xs text-outline block mt-1">{{ collection_summary.completion_rate }}% completion rate</span>
+        </div>
+
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm">
+            <span class="text-xs font-bold uppercase tracking-wider text-outline block mb-1">Diagnostic Scales</span>
+            <span class="font-data-mono text-3xl md:text-4xl font-extrabold text-on-surface">{{ collection_summary.total_diagnostics }}</span>
+            <span class="text-xs text-outline block mt-1">PHQ-9, GAD-7, Y-BOCS</span>
+        </div>
+
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 shadow-sm">
+            <span class="text-xs font-bold uppercase tracking-wider text-outline block mb-1">Worksheets</span>
+            <span class="font-data-mono text-3xl md:text-4xl font-extrabold text-on-surface">{{ collection_summary.total_worksheets }}</span>
+            <span class="text-xs text-outline block mt-1">Active assignments</span>
+        </div>
+    </section>
+
+    <!-- SECTION 1: Diagnostic Scale Assessments -->
+    <section class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+        <div class="p-6 border-b border-outline-variant flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface-container-low">
+            <div>
+                <h2 class="text-xl font-bold text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">assignment</span>
+                    Diagnostic Scale Submissions
                 </h2>
-                <p class="font-body-sm text-on-surface-variant mt-xs">
-                    Participant cognitive assessment records
-                </p>
+                <p class="text-xs text-outline mt-0.5">Patient responses to standardized questionnaires (PHQ-9, GAD-7, Y-BOCS)</p>
             </div>
+            <span class="text-xs font-bold font-data-mono bg-surface-container-high px-3 py-1 rounded-full text-on-surface">
+                Total: {{ diagnostic_results|length }}
+            </span>
+        </div>
 
-            {% if results %}
-            <div class="divide-y divide-outline-variant">
-                {% for result in results %}
-                <div class="p-lg hover:bg-surface-container-low transition-colors">
-
-                    <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-lg">
-
-                        <div class="space-y-xs">
-                            <h3 class="font-body-lg font-semibold text-on-surface">
-                                {{ result.test_type|replace("_", " ")|title }}
-                            </h3>
-
-                            <div class="font-data-mono text-sm text-on-surface-variant space-y-xs">
-                                <p>
-                                    Participant:
-                                    {{ result.user.participant_id }}
-                                </p>
-
-                                <p>
-                                    Username:
-                                    {{ result.user.username }}
-                                </p>
-
-                                <p>
-                                    Session ID:
-                                    {{ result.id }}
-                                </p>
-
-                                <p>
-                                    Trials:
-                                    {{ result.total_trials }}
-                                </p>
-
-                                {% if result.test_version %}
-                                <p>
-                                    Version:
-                                    {{ result.test_version }}
-                                </p>
-                                {% endif %}
-
-                                <p>
-                                    Started:
-                                    {{ result.started_at.strftime("%d %b %Y, %H:%M") if result.started_at else "-" }}
-                                </p>
-
-                                <p>
-                                    Completed:
-                                    {{ result.completed_at.strftime("%d %b %Y, %H:%M") if result.completed_at else "Not
-                                    completed" }}
-                                </p>
-                            </div>
-                        </div>
-
-                        {% if result.summary_metrics %}
-                        <div class="w-full lg:w-2/3">
-                            <h4 class="font-label-caps text-label-caps text-on-surface-variant mb-sm">
-                                Summary Metrics
-                            </h4>
-
-                            <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-sm">
-                                {% for key, value in result.summary_metrics.items() %}
-                                <div class="bg-surface-container-low border border-outline-variant rounded-lg p-md">
-                                    <span class="font-label-caps text-label-caps text-outline block mb-xs">
-                                        {{ key|replace("_", " ")|title }}
-                                    </span>
-
-                                    <span class="font-data-mono text-lg text-on-surface break-words">
-                                        {% if value is number %}
-                                        {{ value|round(2) }}
-                                        {% else %}
-                                        {{ value }}
-                                        {% endif %}
-                                    </span>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% else %}
-                        <div
-                            class="lg:w-2/3 flex items-center justify-center min-h-[120px] bg-surface-container-low rounded-lg">
-                            <span class="font-body-sm text-outline">
-                                No summary metrics available
+        {% if diagnostic_results %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-outline-variant bg-surface-container text-xs font-bold uppercase tracking-wider text-on-surface-variant">
+                        <th class="p-4">ID</th>
+                        <th class="p-4">Participant</th>
+                        <th class="p-4">Scale</th>
+                        <th class="p-4">Score</th>
+                        <th class="p-4">Classification</th>
+                        <th class="p-4">Completed</th>
+                        <th class="p-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant text-sm font-data-mono">
+                    {% for d in diagnostic_results %}
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="p-4 font-bold text-outline">#{{ d.id }}</td>
+                        <td class="p-4">
+                            <span class="font-bold text-on-surface block">{{ d.user.participant_id if d.user else 'Unknown' }}</span>
+                            <span class="text-xs text-outline font-sans">{{ d.user.username if d.user else 'Deleted' }}</span>
+                        </td>
+                        <td class="p-4 font-sans font-semibold text-primary">{{ d.scale_name }}</td>
+                        <td class="p-4 font-bold">
+                            {{ d.total_score }} <span class="text-xs text-outline font-normal">/ {{ d.max_score }}</span>
+                        </td>
+                        <td class="p-4 font-sans">
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-primary-container text-on-primary-container">
+                                {{ d.interpretation or 'Scored' }}
                             </span>
-                        </div>
-                        {% endif %}
+                        </td>
+                        <td class="p-4 text-xs text-outline">
+                            {{ d.completed_at.strftime("%Y-%m-%d %H:%M") if d.completed_at else "-" }}
+                        </td>
+                        <td class="p-4 text-right">
+                            <form method="POST" action="{{ url_for('admin.delete_diagnostic', assessment_id=d.id) }}" class="inline"
+                                  onsubmit="return confirm('Are you sure you want to permanently delete diagnostic assessment #{{ d.id }}?');">
+                                <button type="submit" class="px-3 py-1.5 text-xs font-semibold rounded bg-red-100 text-red-700 hover:bg-red-200 transition-colors">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-8 text-center text-outline">
+            <span class="material-symbols-outlined text-4xl mb-2 text-outline">assignment_turned_in</span>
+            <p class="font-semibold">No diagnostic scale assessments found.</p>
+            <p class="text-xs mt-1">When users complete PHQ-9, GAD-7, or Y-BOCS questionnaires, they will be listed here.</p>
+        </div>
+        {% endif %}
+    </section>
 
-                    </div>
+    <!-- SECTION 2: Cognitive Test Sessions -->
+    <section class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+        <div class="p-6 border-b border-outline-variant flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface-container-low">
+            <div>
+                <h2 class="text-xl font-bold text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">psychology</span>
+                    Cognitive Test Sessions
+                </h2>
+                <p class="text-xs text-outline mt-0.5">Reaction-time behavioral task sessions and trial records</p>
+            </div>
+            <span class="text-xs font-bold font-data-mono bg-surface-container-high px-3 py-1 rounded-full text-on-surface">
+                Total: {{ results|length }}
+            </span>
+        </div>
+
+        {% if results %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-outline-variant bg-surface-container text-xs font-bold uppercase tracking-wider text-on-surface-variant">
+                        <th class="p-4">Session ID</th>
+                        <th class="p-4">Participant</th>
+                        <th class="p-4">Task</th>
+                        <th class="p-4">Trials</th>
+                        <th class="p-4">Accuracy</th>
+                        <th class="p-4">Mean RT</th>
+                        <th class="p-4">Stroop Effect</th>
+                        <th class="p-4">Completed</th>
+                        <th class="p-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant text-sm font-data-mono">
+                    {% for r in results %}
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="p-4 font-bold text-outline">#{{ r.id }}</td>
+                        <td class="p-4">
+                            <span class="font-bold text-on-surface block">{{ r.user.participant_id if r.user else 'Unknown' }}</span>
+                            <span class="text-xs text-outline font-sans">{{ r.user.username if r.user else 'Deleted' }}</span>
+                        </td>
+                        <td class="p-4 font-sans font-semibold">{{ r.test_type|replace('_', ' ')|title }}</td>
+                        <td class="p-4">{{ r.total_trials }}</td>
+                        <td class="p-4">
+                            {% if r.summary_metrics and r.summary_metrics.get("accuracy") is not none %}
+                                {{ r.summary_metrics.get("accuracy")|round(1) }}%
+                            {% else %}-{% endif %}
+                        </td>
+                        <td class="p-4">
+                            {% if r.summary_metrics and r.summary_metrics.get("mean_rt") is not none %}
+                                {{ r.summary_metrics.get("mean_rt")|round(0) }} ms
+                            {% else %}-{% endif %}
+                        </td>
+                        <td class="p-4">
+                            {% if r.summary_metrics and r.summary_metrics.get("stroop_effect") is not none %}
+                                <span class="{% if r.summary_metrics.get('stroop_effect') > 0 %}text-amber-700{% else %}text-green-700{% endif %} font-bold">
+                                    {{ r.summary_metrics.get("stroop_effect")|round(0) }} ms
+                                </span>
+                            {% else %}-{% endif %}
+                        </td>
+                        <td class="p-4 text-xs text-outline">
+                            {{ r.completed_at.strftime("%Y-%m-%d %H:%M") if r.completed_at else 'Incomplete' }}
+                        </td>
+                        <td class="p-4 text-right">
+                            <form method="POST" action="{{ url_for('admin.delete_session', session_id=r.id) }}" class="inline"
+                                  onsubmit="return confirm('Permanently delete cognitive session #{{ r.id }} and all its trials?');">
+                                <button type="submit" class="px-3 py-1.5 text-xs font-semibold rounded bg-red-100 text-red-700 hover:bg-red-200 transition-colors">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-8 text-center text-outline">
+            <span class="material-symbols-outlined text-4xl mb-2 text-outline">timer</span>
+            <p class="font-semibold">No cognitive sessions found.</p>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- SECTION 3: Worksheet Assignments -->
+    <section class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+        <div class="p-6 border-b border-outline-variant flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface-container-low">
+            <div>
+                <h2 class="text-xl font-bold text-on-surface flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">description</span>
+                    Worksheet Assignments
+                </h2>
+                <p class="text-xs text-outline mt-0.5">Clinical digital worksheets assigned to patients</p>
+            </div>
+            <span class="text-xs font-bold font-data-mono bg-surface-container-high px-3 py-1 rounded-full text-on-surface">
+                Total: {{ worksheet_results|length }}
+            </span>
+        </div>
+
+        {% if worksheet_results %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-outline-variant bg-surface-container text-xs font-bold uppercase tracking-wider text-on-surface-variant">
+                        <th class="p-4">ID</th>
+                        <th class="p-4">Worksheet</th>
+                        <th class="p-4">Patient</th>
+                        <th class="p-4">Assigned By</th>
+                        <th class="p-4">Assigned Date</th>
+                        <th class="p-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant text-sm font-data-mono">
+                    {% for w in worksheet_results %}
+                    <tr class="hover:bg-surface-container-low transition-colors">
+                        <td class="p-4 font-bold text-outline">#{{ w.id }}</td>
+                        <td class="p-4 font-sans font-semibold text-on-surface">{{ w.worksheet_name }}</td>
+                        <td class="p-4 font-sans">{{ w.patient.name if w.patient else 'Unknown' }} ({{ w.patient.participant_id if w.patient else '' }})</td>
+                        <td class="p-4 font-sans">{{ w.assigned_by.username if w.assigned_by else 'Admin' }}</td>
+                        <td class="p-4 text-xs text-outline">{{ w.assigned_at.strftime("%Y-%m-%d %H:%M") if w.assigned_at else "-" }}</td>
+                        <td class="p-4 text-right">
+                            <form method="POST" action="{{ url_for('admin.delete_worksheet', assignment_id=w.id) }}" class="inline"
+                                  onsubmit="return confirm('Permanently delete worksheet assignment #{{ w.id }}?');">
+                                <button type="submit" class="px-3 py-1.5 text-xs font-semibold rounded bg-red-100 text-red-700 hover:bg-red-200 transition-colors">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-8 text-center text-outline">
+            <p class="font-semibold">No worksheet assignments found.</p>
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- SECTION 4: Database Maintenance & Category Purge -->
+    <section class="bg-surface-container-lowest border-2 border-red-200 rounded-xl p-6 md:p-8 shadow-sm">
+        <div class="flex items-center gap-3 mb-4">
+            <span class="material-symbols-outlined text-red-600 text-3xl">warning</span>
+            <div>
+                <h2 class="text-xl font-bold text-red-700">Database Purge & Reset Controls</h2>
+                <p class="text-xs text-outline mt-0.5">Selective bulk deletion of experimental or test records from SQLite database</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+            <!-- Purge Cognitive -->
+            <div class="p-4 border border-red-200 bg-red-50/50 rounded-lg flex flex-col justify-between">
+                <div>
+                    <h3 class="font-bold text-sm text-red-900 mb-1">Clear Cognitive Sessions</h3>
+                    <p class="text-xs text-red-700 mb-4">Permanently drops all test sessions and individual trial records.</p>
                 </div>
-                {% endfor %}
+                <form method="POST" action="{{ url_for('admin.purge_category', category='cognitive') }}"
+                      onsubmit="return confirm('WARNING: Are you sure you want to delete ALL cognitive test sessions and trials?');">
+                    <button type="submit" class="w-full py-2 px-3 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded transition-colors">
+                        Purge All Cognitive Data
+                    </button>
+                </form>
             </div>
 
-            {% else %}
-
-            <div class="min-h-[300px] flex flex-col items-center justify-center text-center p-xl">
-                <span class="material-symbols-outlined text-outline text-5xl mb-md">
-                    database
-                </span>
-
-                <h3 class="font-headline-sm text-on-surface">
-                    No Test Sessions Found
-                </h3>
-
-                <p class="font-body-sm text-on-surface-variant mt-xs">
-                    Completed participant tests will appear here.
-                </p>
+            <!-- Purge Diagnostics -->
+            <div class="p-4 border border-red-200 bg-red-50/50 rounded-lg flex flex-col justify-between">
+                <div>
+                    <h3 class="font-bold text-sm text-red-900 mb-1">Clear Diagnostic Scales</h3>
+                    <p class="text-xs text-red-700 mb-4">Permanently drops all questionnaire responses (PHQ-9, GAD-7, Y-BOCS).</p>
+                </div>
+                <form method="POST" action="{{ url_for('admin.purge_category', category='diagnostics') }}"
+                      onsubmit="return confirm('WARNING: Are you sure you want to delete ALL diagnostic scale submissions?');">
+                    <button type="submit" class="w-full py-2 px-3 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded transition-colors">
+                        Purge All Diagnostics
+                    </button>
+                </form>
             </div>
 
-            {% endif %}
-        </section>
+            <!-- Purge Worksheets -->
+            <div class="p-4 border border-red-200 bg-red-50/50 rounded-lg flex flex-col justify-between">
+                <div>
+                    <h3 class="font-bold text-sm text-red-900 mb-1">Clear Worksheets</h3>
+                    <p class="text-xs text-red-700 mb-4">Removes all assigned clinical worksheets across all patients.</p>
+                </div>
+                <form method="POST" action="{{ url_for('admin.purge_category', category='worksheets') }}"
+                      onsubmit="return confirm('WARNING: Are you sure you want to delete ALL worksheet assignments?');">
+                    <button type="submit" class="w-full py-2 px-3 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded transition-colors">
+                        Purge All Worksheets
+                    </button>
+                </form>
+            </div>
 
-    </div>
+            <!-- Purge Test Patients -->
+            <div class="p-4 border border-red-200 bg-red-50/50 rounded-lg flex flex-col justify-between">
+                <div>
+                    <h3 class="font-bold text-sm text-red-900 mb-1">Clear Test Patients</h3>
+                    <p class="text-xs text-red-700 mb-4">Deletes patient/user accounts while strictly protecting admin accounts.</p>
+                </div>
+                <form method="POST" action="{{ url_for('admin.purge_category', category='test_users') }}"
+                      onsubmit="return confirm('WARNING: Are you sure you want to delete all non-admin participant/patient accounts?');">
+                    <button type="submit" class="w-full py-2 px-3 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded transition-colors">
+                        Purge Patient Accounts
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
 </main>
 {% endblock %}

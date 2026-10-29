@@ -65,42 +65,43 @@
   <body>
       <nav class="site-nav" aria-label="Primary">
         <div class="nav-inner">
-          <a class="brand" href="{{ url_for('index') }}">Cognitive Metrics Lab</a>
+          <a class="brand" href="{{ url_for('index') }}">
+            <span style="color:#0f2044;font-weight:800;font-size:17px;letter-spacing:-.01em;">NeuroTrack</span>
+            <span style="color:#9ca3af;font-weight:400;font-size:13px;margin-left:6px;">/ Cognitive Metrics Lab</span>
+          </a>
           <div class="nav-links">
-      
+
             {# 1. ADMIN NAVBAR #}
             {% if session.get("role") == "admin" %}
             <a class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}"
               href="{{ url_for('admin.dashboard') }}">Dashboard</a>
             <a href="{{ url_for('admin.users') }}">Users</a>
-            <a href="#">User Details</a>
             <a href="#">System Logs</a>
-      
+
             {# 2. PSYCHOLOGIST NAVBAR #}
             {% elif session.get("role") == "psychologist" %}
-            <a class="{% if request.endpoint == 'psychologist.dashboard' %}active{% endif %}" href="#">Internal Management</a>
-            <a href="#">Assessments</a>
-            <a href="#">Participant Data</a>
+            <a class="{% if request.endpoint == 'psychologist_dashboard' %}active{% endif %}" href="{{ url_for('psychologist_dashboard') }}">Dashboard</a>
+            <a class="{% if 'diagnostics' in request.endpoint %}active{% endif %}" href="{{ url_for('diagnostics.index') }}">Diagnostic Scales</a>
+            <a class="{% if request.endpoint == 'psychologist_worksheets' %}active{% endif %}" href="{{ url_for('psychologist_worksheets') }}">Worksheets</a>
             <a class="{% if request.endpoint == 'profile' %}active{% endif %}" href="{{ url_for('profile') }}">Profile</a>
 
-            {# 3. NORMAL USER / GUEST NAVBAR #}
-            {% elif session.get("role") == "user" %}
+            {# 3. PATIENT / USER NAVBAR #}
+            {% elif session.get("role") in ["patient", "user"] %}
             <a class="{% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">Home</a>
-            <a href="#experiments">Experiments</a>
+            <a class="{% if request.endpoint == 'stroop.test' %}active{% endif %}" href="{{ url_for('stroop.test') }}">Cognitive Tasks</a>
+            <a class="{% if 'diagnostics' in request.endpoint %}active{% endif %}" href="{{ url_for('diagnostics.index') }}">Diagnostic Scales</a>
+            <a class="{% if request.endpoint == 'patient_worksheets' %}active{% endif %}" href="{{ url_for('patient_worksheets') }}">My Worksheets</a>
             <a class="{% if request.endpoint == 'profile' %}active{% endif %}" href="{{ url_for('profile') }}">Profile</a>
             {% endif %}
-      
-            {# COMMON AUTH LINKS FOR LOGGED IN USERS #}
+
+            {# COMMON AUTH LINKS #}
             {% if session.get("username") %}
-            
-            <a href="{{ url_for('logout') }}">Logout</a>
+            <a href="{{ url_for('logout') }}" style="color:#6b7280;">Logout</a>
             {% else %}
             <a class="{% if request.endpoint == 'login' %}active{% endif %}" href="{{ url_for('login') }}">Login</a>
             <a class="{% if request.endpoint == 'register' %}active{% endif %}" href="{{ url_for('register') }}">Register</a>
             {% endif %}
-      
-            <a href="#">Help</a>
-            <a href="{{ url_for('soft_tools') }}">Switch</a>
+            <a href="#" style="color:#6b7280;">Help</a>
           </div>
         </div>
       </nav>
@@ -115,6 +116,217 @@
         </div>
       {% endif %}
     {% endwith %}
+
+
+<style id="nt-design-system">
+/* ── NeuroTrack Project-Wide Design System ─────────────────────────── */
+:root {
+  --nt-navy:     #0f2044;
+  --nt-blue:     #1d4ed8;
+  --nt-blue-lt:  #3b82f6;
+  --nt-teal:     #0d9488;
+  --nt-purple:   #7c3aed;
+  --nt-green:    #16a34a;
+  --nt-amber:    #d97706;
+  --nt-red:      #dc2626;
+  --nt-gray-bg:  #F7F8FA;
+  --nt-surface:  #ffffff;
+  --nt-border:   #e3e7ee;
+  --nt-border2:  #c8d0de;
+  --nt-text:     #111827;
+  --nt-muted:    #6b7280;
+  --nt-muted2:   #9ca3af;
+  --nt-sh:       0 1px 3px rgba(15,32,68,.06), 0 4px 16px rgba(15,32,68,.04);
+  --nt-sh-hover: 0 4px 12px rgba(15,32,68,.10), 0 12px 40px rgba(15,32,68,.07);
+}
+
+body { background: var(--nt-gray-bg); }
+
+/* ── Shared Page Wrappers ───────────────────────────────────────────── */
+.nt-page  { width: min(100%, 1200px); margin: 0 auto; padding: 0 24px 96px; }
+.nt-page-sm { width: min(100%, 900px); margin: 0 auto; padding: 0 24px 96px; }
+.nt-page-xs { width: min(100%, 680px); margin: 0 auto; padding: 0 24px 80px; }
+
+/* ── Eyebrow label ──────────────────────────────────────────────────── */
+.nt-eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700; letter-spacing: .09em;
+  text-transform: uppercase; color: var(--nt-blue);
+  margin: 0;
+}
+.nt-eyebrow::before {
+  content: ""; width: 16px; height: 2px; border-radius: 2px;
+  background: var(--nt-blue); flex-shrink: 0;
+}
+.nt-eyebrow.teal  { color: var(--nt-teal); }
+.nt-eyebrow.teal::before { background: var(--nt-teal); }
+.nt-eyebrow.purple { color: var(--nt-purple); }
+.nt-eyebrow.purple::before { background: var(--nt-purple); }
+
+/* ── Page Header ────────────────────────────────────────────────────── */
+.nt-page-header {
+  padding: 48px 0 40px;
+  border-bottom: 1px solid var(--nt-border);
+  margin-bottom: 40px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 24px; flex-wrap: wrap;
+}
+.nt-page-header h1 {
+  font-size: 32px; font-weight: 800; color: var(--nt-navy);
+  margin: 8px 0 4px; line-height: 1.15; letter-spacing: -.02em;
+}
+.nt-page-header p {
+  font-size: 14px; color: var(--nt-muted); margin: 0; max-width: 560px;
+}
+.nt-page-header-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+/* ── Section header ─────────────────────────────────────────────────── */
+.nt-section-hdr {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 16px; margin-bottom: 20px;
+}
+.nt-section-hdr h2 {
+  font-size: 20px; font-weight: 700; color: var(--nt-navy); margin: 0;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────── */
+.nt-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 7px; border-radius: 8px; font-size: 14px; font-weight: 650;
+  line-height: 1; padding: 11px 20px; border: 1.5px solid transparent;
+  transition: all 180ms ease; cursor: pointer; text-decoration: none; white-space: nowrap;
+}
+.nt-btn-primary { background: var(--nt-navy); color: #fff; border-color: var(--nt-navy); }
+.nt-btn-primary:hover { background: #1a3566; border-color: #1a3566; box-shadow: 0 4px 14px rgba(15,32,68,.3); transform: translateY(-1px); color: #fff; }
+.nt-btn-secondary { background: transparent; color: var(--nt-navy); border-color: var(--nt-border2); }
+.nt-btn-secondary:hover { background: #fff; border-color: #aab4c8; box-shadow: 0 2px 8px rgba(15,32,68,.08); }
+.nt-btn-teal   { background: var(--nt-teal); color: #fff; border-color: var(--nt-teal); }
+.nt-btn-teal:hover { background: #0f766e; border-color: #0f766e; box-shadow: 0 4px 14px rgba(13,148,136,.3); }
+.nt-btn-danger { background: var(--nt-red); color: #fff; border-color: var(--nt-red); }
+.nt-btn-danger:hover { background: #b91c1c; border-color: #b91c1c; }
+.nt-btn-sm { padding: 7px 14px; font-size: 12px; }
+.nt-btn-lg { padding: 14px 28px; font-size: 16px; }
+.nt-btn-full { width: 100%; }
+
+/* ── Cards ───────────────────────────────────────────────────────────── */
+.nt-card {
+  background: var(--nt-surface); border: 1px solid var(--nt-border);
+  border-radius: 14px; padding: 24px; box-shadow: var(--nt-sh);
+  transition: box-shadow 200ms ease, border-color 200ms ease, transform 200ms ease;
+}
+.nt-card:hover { border-color: var(--nt-border2); box-shadow: var(--nt-sh-hover); transform: translateY(-2px); }
+.nt-card-flat  { background: var(--nt-surface); border: 1px solid var(--nt-border); border-radius: 14px; padding: 24px; }
+.nt-card-muted { background: var(--nt-gray-bg); border: 1px solid var(--nt-border); border-radius: 10px; padding: 16px; }
+
+/* ── KPI stat blocks ─────────────────────────────────────────────────── */
+.nt-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.nt-kpi {
+  background: var(--nt-surface); border: 1px solid var(--nt-border);
+  border-radius: 12px; padding: 20px; box-shadow: var(--nt-sh);
+}
+.nt-kpi-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--nt-muted2); display: block; margin-bottom: 8px; }
+.nt-kpi-value { font-size: 36px; font-weight: 800; color: var(--nt-navy); line-height: 1; display: block; font-variant-numeric: tabular-nums; }
+.nt-kpi-sub   { font-size: 11px; color: var(--nt-muted); margin-top: 4px; display: block; }
+.nt-kpi.blue  .nt-kpi-value { color: var(--nt-blue); }
+.nt-kpi.teal  .nt-kpi-value { color: var(--nt-teal); }
+.nt-kpi.green .nt-kpi-value { color: var(--nt-green); }
+
+/* ── Badges / pills ─────────────────────────────────────────────────── */
+.nt-badge { display: inline-flex; align-items: center; font-size: 10px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 5px; }
+.nt-badge-green  { background: #dcfce7; color: #166534; }
+.nt-badge-blue   { background: #dbeafe; color: #1d4ed8; }
+.nt-badge-teal   { background: #ccfbf1; color: #0f766e; }
+.nt-badge-purple { background: #ede9fe; color: #6d28d9; }
+.nt-badge-amber  { background: #fef3c7; color: #92400e; }
+.nt-badge-red    { background: #fee2e2; color: #991b1b; }
+.nt-badge-gray   { background: #f1f5f9; color: #64748b; }
+.nt-badge-navy   { background: #e0e7ff; color: #1e3a8a; }
+
+/* ── Forms ───────────────────────────────────────────────────────────── */
+.nt-field        { display: grid; gap: 6px; }
+.nt-field label  { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--nt-muted); }
+.nt-input {
+  width: 100%; min-height: 44px;
+  border: 1.5px solid var(--nt-border); border-radius: 8px;
+  background: var(--nt-surface); color: var(--nt-text);
+  padding: 9px 12px; font-size: 14px; font-family: inherit;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+.nt-input:focus { border-color: var(--nt-blue); box-shadow: 0 0 0 3px rgba(29,78,216,.12); outline: none; }
+textarea.nt-input { min-height: 100px; resize: vertical; }
+.nt-form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+/* ── Auth page ───────────────────────────────────────────────────────── */
+.nt-auth-page {
+  display: flex; min-height: calc(100vh - 60px); align-items: center;
+  justify-content: center; padding: 48px 24px;
+}
+.nt-auth-card {
+  width: min(100%, 520px);
+  background: var(--nt-surface); border: 1px solid var(--nt-border);
+  border-radius: 16px; padding: 40px; box-shadow: var(--nt-sh);
+}
+.nt-auth-card h1 { font-size: 28px; font-weight: 800; color: var(--nt-navy); margin: 10px 0 6px; }
+.nt-auth-card p.subtitle { font-size: 14px; color: var(--nt-muted); margin: 0 0 28px; }
+.nt-auth-switch { margin-top: 24px; font-size: 13px; color: var(--nt-muted); text-align: center; }
+.nt-auth-switch a { color: var(--nt-blue); font-weight: 600; }
+.nt-consent-box {
+  display: flex; align-items: flex-start; gap: 12px;
+  border: 1.5px solid var(--nt-border); border-radius: 10px;
+  background: var(--nt-gray-bg); padding: 14px;
+  font-size: 13px; color: var(--nt-muted); cursor: pointer;
+}
+.nt-consent-box input { width: 18px; height: 18px; flex: 0 0 auto; margin-top: 2px; accent-color: var(--nt-blue); }
+
+/* ── Tables ──────────────────────────────────────────────────────────── */
+.nt-table-wrap { background: var(--nt-surface); border: 1px solid var(--nt-border); border-radius: 14px; overflow: hidden; box-shadow: var(--nt-sh); }
+.nt-table { width: 100%; border-collapse: collapse; }
+.nt-table th { background: var(--nt-gray-bg); font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--nt-muted); padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--nt-border); }
+.nt-table td { padding: 13px 16px; font-size: 13px; color: var(--nt-text); border-bottom: 1px solid var(--nt-border); }
+.nt-table tr:last-child td { border-bottom: none; }
+.nt-table tr:hover td { background: #f9fafb; }
+
+/* ── Back link ───────────────────────────────────────────────────────── */
+.nt-back { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; color: var(--nt-blue); text-decoration: none; margin-bottom: 24px; }
+.nt-back:hover { text-decoration: underline; }
+
+/* ── Empty state ─────────────────────────────────────────────────────── */
+.nt-empty { text-align: center; padding: 48px 24px; }
+.nt-empty .icon { font-size: 48px; color: var(--nt-muted2); margin-bottom: 12px; display: block; }
+.nt-empty h3 { font-size: 18px; font-weight: 700; color: var(--nt-navy); margin: 0 0 6px; }
+.nt-empty p  { font-size: 13px; color: var(--nt-muted); margin: 0; }
+
+/* ── 2-col layout ───────────────────────────────────────────────────── */
+.nt-2col { display: grid; grid-template-columns: 1fr 2fr; gap: 24px; }
+.nt-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.nt-2col-eq { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+/* ── Participant badge ────────────────────────────────────────────────── */
+.nt-participant-tag {
+  background: var(--nt-gray-bg); border: 1px solid var(--nt-border);
+  border-radius: 10px; padding: 10px 14px; text-align: right;
+}
+.nt-participant-tag .label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--nt-muted2); display: block; }
+.nt-participant-tag .value { font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--nt-navy); display: block; margin-top: 2px; }
+
+/* ── Instructions box ─────────────────────────────────────────────────── */
+.nt-instructions {
+  background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px;
+  padding: 14px 18px; font-size: 13px; color: #1e3a8a; line-height: 1.6;
+}
+
+/* ── Score bands ──────────────────────────────────────────────────────── */
+.nt-score-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.nt-score-box { background: var(--nt-gray-bg); border: 1px solid var(--nt-border); border-radius: 12px; padding: 20px; text-align: center; }
+.nt-score-box .label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--nt-muted2); display: block; margin-bottom: 8px; }
+.nt-score-box .value { font-size: 40px; font-weight: 800; color: var(--nt-navy); font-variant-numeric: tabular-nums; display: block; line-height: 1; }
+.nt-score-box .sub   { font-size: 11px; color: var(--nt-muted); display: block; margin-top: 4px; }
+.nt-score-box.highlight .value { color: var(--nt-blue); }
+
+/* ── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 1024px) { .nt-kpi-grid { grid-template-columns: repeat(2, 1fr); } .nt-2col { grid-template-columns: 1fr; } .nt-3col { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px) { .nt-kpi-grid { grid-template-columns: 1fr 1fr; } .nt-3col { grid-template-columns: 1fr; } .nt-score-grid { grid-template-columns: 1fr; } .nt-form-grid { grid-template-columns: 1fr; } .nt-2col-eq { grid-template-columns: 1fr; } .nt-page-header { flex-direction: column; align-items: flex-start; } }
+</style>
 
     {% block content %}{% endblock %}
   </body>

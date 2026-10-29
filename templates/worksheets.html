@@ -1,0 +1,137 @@
+{% extends "layout.html" %}
+{% block title %}My Worksheets — NeuroTrack{% endblock %}
+{% block content %}
+<div class="nt-page">
+  <div class="nt-page-header">
+    <div>
+      <p class="nt-eyebrow purple">Therapeutic Toolkit</p>
+      <h1>My Digital Worksheets</h1>
+      <p>Evidence-based CBT and DBT structured reflection logs assigned by your clinician or self-initiated.</p>
+    </div>
+    <a href="#self-guided" class="nt-btn nt-btn-primary nt-btn-sm">
+      <span class="material-symbols-outlined" style="font-size:15px">add</span>
+      Start Self-Guided
+    </a>
+  </div>
+
+  <!-- Assigned Worksheets -->
+  <section style="margin-bottom:48px;">
+    <div class="nt-section-hdr">
+      <h2 style="display:flex;align-items:center;gap:8px;">
+        <span class="material-symbols-outlined" style="color:var(--nt-purple);">assignment</span>
+        Assigned & In-Progress
+      </h2>
+      <span style="font-size:12px;color:var(--nt-muted2);">{{ assignments|length }} total</span>
+    </div>
+
+    {% if assignments %}
+    <div class="nt-2col-eq" style="gap:16px;">
+      {% for a in assignments %}
+      <article class="nt-card" style="display:flex;flex-direction:column;justify-content:space-between;gap:16px;">
+        <div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;">
+            <h3 style="font-size:16px;font-weight:700;color:var(--nt-navy);margin:0;">{{ a.worksheet_name }}</h3>
+            {% if a.is_completed %}
+            <span class="nt-badge nt-badge-green">Completed</span>
+            {% else %}
+            <span class="nt-badge nt-badge-amber">Pending</span>
+            {% endif %}
+          </div>
+          <p style="font-size:12px;color:var(--nt-muted);margin:0 0 10px;">
+            {% if a.assigned_by %}
+              Assigned by Dr. {{ a.assigned_by.name }} on {{ a.assigned_at.strftime('%d %b %Y') if a.assigned_at else 'recently' }}
+            {% else %}
+              Self-initiated on {{ a.assigned_at.strftime('%d %b %Y') if a.assigned_at else 'recently' }}
+            {% endif %}
+          </p>
+          {% if a.is_completed %}
+          <p style="font-size:12px;color:var(--nt-green);display:flex;align-items:center;gap:4px;margin:0;">
+            <span class="material-symbols-outlined" style="font-size:15px">check_circle</span>
+            Completed {{ a.completed_at.strftime('%d %b %Y') if a.completed_at else '' }}
+          </p>
+          {% else %}
+          <p style="font-size:12px;color:var(--nt-amber);display:flex;align-items:center;gap:4px;margin:0;">
+            <span class="material-symbols-outlined" style="font-size:15px">schedule</span>
+            Ready for your input
+          </p>
+          {% endif %}
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--nt-border);">
+          {% if a.is_completed %}
+          <a href="{{ url_for('fill_worksheet', assignment_id=a.id) }}" class="nt-btn nt-btn-secondary nt-btn-sm">Review Submission</a>
+          {% else %}
+          <a href="{{ url_for('fill_worksheet', assignment_id=a.id) }}" class="nt-btn nt-btn-primary nt-btn-sm">
+            Open & Fill Out →
+          </a>
+          {% endif %}
+          {% if a.notes %}
+          <span style="font-size:11px;color:var(--nt-blue);display:flex;align-items:center;gap:4px;">
+            <span class="material-symbols-outlined" style="font-size:14px">chat</span> Notes attached
+          </span>
+          {% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="nt-card-flat nt-empty">
+      <span class="icon material-symbols-outlined">assignment_late</span>
+      <h3>No assigned worksheets found</h3>
+      <p>Start a self-guided worksheet below or wait for your psychologist to assign one.</p>
+    </div>
+    {% endif %}
+  </section>
+
+  <!-- Self-Guided Library -->
+  <section id="self-guided">
+    <div class="nt-section-hdr">
+      <h2 style="display:flex;align-items:center;gap:8px;">
+        <span class="material-symbols-outlined" style="color:var(--nt-blue);">local_library</span>
+        Self-Guided Worksheet Library
+      </h2>
+    </div>
+    <p style="font-size:13px;color:var(--nt-muted);margin:0 0 20px;">Start an interactive therapeutic exercise anytime on demand.</p>
+
+    <div class="nt-3col">
+      <article class="nt-card" style="display:flex;flex-direction:column;justify-content:space-between;gap:14px;">
+        <div>
+          <span class="nt-badge nt-badge-blue" style="margin-bottom:12px;display:inline-flex;">CBT Tool</span>
+          <h3 style="font-size:16px;font-weight:700;color:var(--nt-navy);margin:0 0 8px;">Interactive Thought Record</h3>
+          <p style="font-size:12px;color:var(--nt-muted);line-height:1.6;margin:0;">
+            7-column cognitive restructuring. Catch automatic negative thoughts, test objective evidence, and re-rate belief intensity.
+          </p>
+        </div>
+        <form method="POST" action="{{ url_for('start_self_worksheet', worksheet_key='thought_record') }}">
+          <button type="submit" class="nt-btn nt-btn-secondary nt-btn-full nt-btn-sm">+ Start Thought Record</button>
+        </form>
+      </article>
+
+      <article class="nt-card" style="display:flex;flex-direction:column;justify-content:space-between;gap:14px;">
+        <div>
+          <span class="nt-badge nt-badge-purple" style="margin-bottom:12px;display:inline-flex;">DBT Tool</span>
+          <h3 style="font-size:16px;font-weight:700;color:var(--nt-navy);margin:0 0 8px;">Daily Diary Card</h3>
+          <p style="font-size:12px;color:var(--nt-muted);line-height:1.6;margin:0;">
+            Track daily emotion intensity, log impulsive urges, and check off DBT coping skills (STOP, TIPP, Wise Mind).
+          </p>
+        </div>
+        <form method="POST" action="{{ url_for('start_self_worksheet', worksheet_key='daily_diary') }}">
+          <button type="submit" class="nt-btn nt-btn-secondary nt-btn-full nt-btn-sm">+ Start Daily Diary</button>
+        </form>
+      </article>
+
+      <article class="nt-card" style="display:flex;flex-direction:column;justify-content:space-between;gap:14px;">
+        <div>
+          <span class="nt-badge nt-badge-teal" style="margin-bottom:12px;display:inline-flex;">Behavioral Analysis</span>
+          <h3 style="font-size:16px;font-weight:700;color:var(--nt-navy);margin:0 0 8px;">Behavioral Chain Analysis</h3>
+          <p style="font-size:12px;color:var(--nt-muted);line-height:1.6;margin:0;">
+            Deconstruct triggering events, vulnerabilities, and chain links leading to problem behaviors, plus repair plans.
+          </p>
+        </div>
+        <form method="POST" action="{{ url_for('start_self_worksheet', worksheet_key='behavioral_chain') }}">
+          <button type="submit" class="nt-btn nt-btn-secondary nt-btn-full nt-btn-sm">+ Start Chain Analysis</button>
+        </form>
+      </article>
+    </div>
+  </section>
+</div>
+{% endblock %}

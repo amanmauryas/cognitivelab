@@ -1,0 +1,221 @@
+"""Digital clinical worksheet schemas and helper utilities."""
+from __future__ import annotations
+
+from typing import Any, Dict, Optional
+
+WORKSHEET_METADATA: Dict[str, Dict[str, Any]] = {
+    "thought_record": {
+        "key": "thought_record",
+        "name": "Interactive Thought Record",
+        "modality": "Cognitive Behavioral Therapy (CBT)",
+        "summary": "Identify unhelpful automatic thoughts, examine contradictory evidence, and construct balanced, realistic perspectives.",
+        "icon": "psychology_alt",
+        "color": "primary",
+        "sections": [
+            {
+                "id": "situation",
+                "title": "1. Situation & Trigger",
+                "prompt": "What happened? Describe the event, when and where it occurred, and who was involved.",
+                "type": "textarea",
+                "placeholder": "e.g., Yesterday afternoon during the team meeting when my project presentation was moved to next week...",
+            },
+            {
+                "id": "automatic_thoughts",
+                "title": "2. Automatic Thoughts",
+                "prompt": "What thoughts or images immediately flashed through your mind?",
+                "type": "textarea",
+                "placeholder": "e.g., 'They think I'm incapable. My work isn't good enough.'",
+            },
+            {
+                "id": "initial_belief",
+                "title": "Initial Belief Rating (0 - 100%)",
+                "prompt": "How strongly did you believe this thought at the time?",
+                "type": "range",
+                "min": 0,
+                "max": 100,
+                "default": 85,
+            },
+            {
+                "id": "emotions",
+                "title": "3. Emotions & Physical Sensations",
+                "prompt": "What feelings did you experience? (e.g., Anxiety, Shame, Anger, Heaviness in chest)",
+                "type": "text",
+                "placeholder": "e.g., Anxiety (80%), Inadequacy (75%), Rapid heart rate",
+            },
+            {
+                "id": "evidence_for",
+                "title": "4. Evidence Supporting the Thought",
+                "prompt": "What concrete, factual evidence supports this thought? (Strictly observable facts, not assumptions)",
+                "type": "textarea",
+                "placeholder": "e.g., The meeting schedule was delayed by the director.",
+            },
+            {
+                "id": "evidence_against",
+                "title": "5. Evidence Contradicting the Thought",
+                "prompt": "What objective evidence argues against this thought? What would a trusted friend say?",
+                "type": "textarea",
+                "placeholder": "e.g., Three other presentations were also rescheduled due to the director's urgent client call. My supervisor praised my draft last Friday.",
+            },
+            {
+                "id": "alternative_thought",
+                "title": "6. Alternative / Balanced Thought",
+                "prompt": "Synthesize the evidence into a balanced, realistic, compassionate perspective.",
+                "type": "textarea",
+                "placeholder": "e.g., 'The reschedule was logistical, not a reflection of my competence. I am prepared and have done thorough work.'",
+            },
+            {
+                "id": "revised_belief",
+                "title": "Revised Belief in Original Thought (0 - 100%)",
+                "prompt": "How strongly do you believe the original negative thought now?",
+                "type": "range",
+                "min": 0,
+                "max": 100,
+                "default": 25,
+            },
+            {
+                "id": "outcome_emotion",
+                "title": "7. Outcome & New Emotional State",
+                "prompt": "How do you feel now? Re-rate your feelings.",
+                "type": "text",
+                "placeholder": "e.g., Relief (70%), Calmness (65%), Anxiety reduced to 25%",
+            },
+        ],
+    },
+    "daily_diary": {
+        "key": "daily_diary",
+        "name": "Daily Diary Card",
+        "modality": "Dialectical Behavior Therapy (DBT)",
+        "summary": "Track daily emotional distress levels, urges, and the deliberate application of DBT coping skills.",
+        "icon": "calendar_month",
+        "color": "secondary",
+        "sections": [
+            {
+                "id": "entry_date",
+                "title": "Date of Entry",
+                "prompt": "Select the day being recorded.",
+                "type": "date",
+            },
+            {
+                "id": "distress_sadness",
+                "title": "Sadness / Low Mood (0 - 5)",
+                "prompt": "0 = None, 5 = Overwhelming",
+                "type": "select",
+                "options": ["0 - None", "1 - Minimal", "2 - Mild", "3 - Moderate", "4 - Severe", "5 - Overwhelming"],
+            },
+            {
+                "id": "distress_anxiety",
+                "title": "Anxiety / Panic (0 - 5)",
+                "prompt": "0 = None, 5 = Overwhelming",
+                "type": "select",
+                "options": ["0 - None", "1 - Minimal", "2 - Mild", "3 - Moderate", "4 - Severe", "5 - Overwhelming"],
+            },
+            {
+                "id": "distress_anger",
+                "title": "Anger / Irritability (0 - 5)",
+                "prompt": "0 = None, 5 = Overwhelming",
+                "type": "select",
+                "options": ["0 - None", "1 - Minimal", "2 - Mild", "3 - Moderate", "4 - Severe", "5 - Overwhelming"],
+            },
+            {
+                "id": "target_urges",
+                "title": "Urges Experienced",
+                "prompt": "Describe any strong impulsive urges (e.g., isolation, avoidance, emotional outburst, bingeing).",
+                "type": "textarea",
+                "placeholder": "e.g., Strong urge to cancel commitments and isolate in my room.",
+            },
+            {
+                "id": "skills_used",
+                "title": "DBT Coping Skills Applied",
+                "prompt": "Check all skills deliberately practiced today:",
+                "type": "checkboxes",
+                "options": [
+                    "STOP Skill (Stop, Take a step back, Observe, Proceed mindfully)",
+                    "TIPP (Temperature, Intense exercise, Paced breathing, Paired muscle relaxation)",
+                    "Radical Acceptance",
+                    "Opposite Action",
+                    "Wise Mind Meditation",
+                    "DEAR MAN (Interpersonal Effectiveness)",
+                    "Self-Soothe with 5 Senses",
+                ],
+            },
+            {
+                "id": "skill_effectiveness",
+                "title": "Skill Effectiveness (0 - 5)",
+                "prompt": "How effective were the coping skills in reducing urge intensity?",
+                "type": "select",
+                "options": ["0 - Not helpful", "1 - Slightly helpful", "2 - Moderate relief", "3 - Good relief", "4 - Very helpful", "5 - Resolved urge completely"],
+            },
+            {
+                "id": "daily_win",
+                "title": "Daily Reflection / Win",
+                "prompt": "What is one positive experience, self-care action, or victory from today?",
+                "type": "textarea",
+                "placeholder": "e.g., Practiced paced breathing when my phone buzzed, and went for a 15-minute afternoon walk.",
+            },
+        ],
+    },
+    "behavioral_chain": {
+        "key": "behavioral_chain",
+        "name": "Behavioral Chain Analysis",
+        "modality": "Functional Behavioral Analysis",
+        "summary": "Examine the step-by-step sequential links leading to a problem behavior, and identify targeted intervention points.",
+        "icon": "link",
+        "color": "tertiary",
+        "sections": [
+            {
+                "id": "problem_behavior",
+                "title": "1. Target Problem Behavior",
+                "prompt": "Specify the exact problem behavior to be understood (be objective and non-judgmental).",
+                "type": "textarea",
+                "placeholder": "e.g., Snapping aggressively at my partner and walking out during a discussion.",
+            },
+            {
+                "id": "prompting_event",
+                "title": "2. Prompting Event / Trigger",
+                "prompt": "What was the exact external or internal event that started this chain?",
+                "type": "textarea",
+                "placeholder": "e.g., Partner mentioned I forgot to pick up the groceries on the way home.",
+            },
+            {
+                "id": "vulnerabilities",
+                "title": "3. Vulnerability Factors",
+                "prompt": "What made you vulnerable before the event? (e.g., Sleep deprivation, physical pain, hunger, prior work stress)",
+                "type": "textarea",
+                "placeholder": "e.g., Slept only 4 hours, skipped lunch, worked a 10-hour shift under tight deadlines.",
+            },
+            {
+                "id": "chain_links",
+                "title": "4. Step-by-Step Chain of Links",
+                "prompt": "Break down the exact sequence of Thoughts -> Emotions -> Body Sensations -> Secondary Actions leading up to the behavior.",
+                "type": "textarea",
+                "placeholder": "1. Thought: 'She never notices how hard I work.'\n2. Emotion: Surge of defensive anger.\n3. Body: Tight jaw, pounding chest.\n4. Thought: 'I can't take this right now.'\n5. Behavior: Shouted and slammed the door.",
+            },
+            {
+                "id": "short_term_consequences",
+                "title": "5. Short-Term Consequences",
+                "prompt": "What was the immediate result? What did the behavior provide in the moment? (e.g., temporary relief, escape)",
+                "type": "textarea",
+                "placeholder": "e.g., Immediate escape from the conversation; tension briefly released.",
+            },
+            {
+                "id": "long_term_consequences",
+                "title": "6. Long-Term Consequences",
+                "prompt": "What are the negative delayed effects on relationships, goals, and self-respect?",
+                "type": "textarea",
+                "placeholder": "e.g., Hurt partner's feelings, damaged trust, spent the evening feeling guilty and disconnected.",
+            },
+            {
+                "id": "repair_plan",
+                "title": "7. Prevention & Skill Intervention Plan",
+                "prompt": "Where in the chain could you intervene next time? What skill will you practice? How can you repair the situation now?",
+                "type": "textarea",
+                "placeholder": "e.g., At Link #2 (defensive anger): practice STOP skill and state: 'I am overwhelmed right now, can we pause for 15 minutes?' For repair: apologize to partner sincerely without excuses.",
+            },
+        ],
+    },
+}
+
+
+def get_worksheet_definition(key: str) -> Optional[Dict[str, Any]]:
+    """Retrieve worksheet definition schema by key."""
+    return WORKSHEET_METADATA.get(key)

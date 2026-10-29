@@ -1,0 +1,158 @@
+{% extends "layout.html" %}
+{% block title %}Dashboard — NeuroTrack{% endblock %}
+{% block content %}
+<div class="nt-page">
+  <div class="nt-page-header">
+    <div>
+      <p class="nt-eyebrow">Psychologist Workspace</p>
+      <h1>Data Collection Dashboard</h1>
+      <p>Review participant activity, cognitive tests, diagnostic assessments, and worksheet assignments.</p>
+    </div>
+    <div class="nt-page-header-actions">
+      <a class="nt-btn nt-btn-secondary nt-btn-sm" href="{{ url_for('diagnostics.index') }}">Diagnostic Scales</a>
+      <a class="nt-btn nt-btn-primary nt-btn-sm" href="{{ url_for('psychologist_worksheets') }}">
+        <span class="material-symbols-outlined" style="font-size:15px">add_task</span>
+        Assign Worksheet
+      </a>
+    </div>
+  </div>
+
+  <!-- KPI Row -->
+  <div class="nt-kpi-grid" style="margin-bottom:40px;">
+    <div class="nt-kpi">
+      <span class="nt-kpi-label">Patients</span>
+      <span class="nt-kpi-value">{{ patients|length }}</span>
+      <span class="nt-kpi-sub">Registered</span>
+    </div>
+    <div class="nt-kpi blue">
+      <span class="nt-kpi-label">Cognitive Sessions</span>
+      <span class="nt-kpi-value">{{ completed_session_count }}</span>
+      <span class="nt-kpi-sub">Completed tests</span>
+    </div>
+    <div class="nt-kpi teal">
+      <span class="nt-kpi-label">Diagnostic Assessments</span>
+      <span class="nt-kpi-value">{{ completed_diagnostic_count }}</span>
+      <span class="nt-kpi-sub">Scale completions</span>
+    </div>
+    <div class="nt-kpi green">
+      <span class="nt-kpi-label">Active Scales</span>
+      <span class="nt-kpi-value">{{ diagnostic_scales|selectattr('status','equalto','available')|list|length }}</span>
+      <span class="nt-kpi-sub">Available now</span>
+    </div>
+  </div>
+
+  <!-- Recent Diagnostics -->
+  <section style="margin-bottom:40px;">
+    <div class="nt-section-hdr">
+      <h2>Recent Diagnostic Assessments</h2>
+      <a href="{{ url_for('diagnostics.index') }}" class="nt-back" style="margin:0;font-size:12px;">View all scales →</a>
+    </div>
+    {% if recent_diagnostics %}
+    <div class="nt-table-wrap">
+      <table class="nt-table">
+        <thead><tr><th>Scale</th><th>Participant</th><th>Date</th><th>Score</th><th>Classification</th></tr></thead>
+        <tbody>
+          {% for item in recent_diagnostics %}
+          <tr>
+            <td style="font-weight:600;color:var(--nt-navy);">{{ item.scale_name }}</td>
+            <td>
+              <span style="font-weight:600;display:block;">{{ item.user.name }}</span>
+              <span style="font-size:11px;font-family:var(--font-mono);color:var(--nt-muted);">{{ item.user.participant_id }}</span>
+            </td>
+            <td style="color:var(--nt-muted);font-size:12px;">{{ item.completed_at.strftime('%d %b %Y %H:%M') if item.completed_at else '-' }}</td>
+            <td><span style="font-family:var(--font-mono);font-weight:700;color:var(--nt-blue);">{{ item.total_score }}/{{ item.max_score }}</span></td>
+            <td>
+              {% if item.interpretation %}
+              <span class="nt-badge nt-badge-navy">{{ item.interpretation }}</span>
+              {% else %}-{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="nt-card-flat nt-empty">
+      <span class="icon material-symbols-outlined">assignment</span>
+      <h3>No diagnostic assessments yet</h3>
+      <p>Patient responses to PHQ-9, GAD-7, and Y-BOCS will appear here.</p>
+    </div>
+    {% endif %}
+  </section>
+
+  <!-- Recent Cognitive Sessions -->
+  <section style="margin-bottom:40px;">
+    <div class="nt-section-hdr">
+      <h2>Recent Cognitive Sessions</h2>
+    </div>
+    {% if recent_sessions %}
+    <div class="nt-table-wrap">
+      <table class="nt-table">
+        <thead><tr><th>Test</th><th>Participant</th><th>Date</th><th>Accuracy</th><th>Mean RT</th></tr></thead>
+        <tbody>
+          {% for item in recent_sessions %}
+          <tr>
+            <td style="font-weight:600;color:var(--nt-navy);">{{ item.test_type|replace('_',' ')|title }}</td>
+            <td>
+              <span style="font-weight:600;display:block;">{{ item.user.name }}</span>
+              <span style="font-size:11px;font-family:var(--font-mono);color:var(--nt-muted);">{{ item.user.participant_id }}</span>
+            </td>
+            <td style="color:var(--nt-muted);font-size:12px;">{{ item.completed_at.strftime('%d %b %Y %H:%M') }}</td>
+            <td>
+              {% if item.summary_metrics %}
+              <span style="font-family:var(--font-mono);font-weight:700;color:var(--nt-blue);">{{ item.summary_metrics.get('accuracy',0)|round(1) }}%</span>
+              {% else %}-{% endif %}
+            </td>
+            <td>
+              {% if item.summary_metrics %}
+              <span style="font-family:var(--font-mono);color:var(--nt-muted);">{{ item.summary_metrics.get('mean_rt',0)|round(0) }} ms</span>
+              {% else %}-{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="nt-card-flat nt-empty">
+      <span class="icon material-symbols-outlined">science</span>
+      <h3>No completed sessions yet</h3>
+      <p>Completed cognitive tasks will appear here automatically.</p>
+    </div>
+    {% endif %}
+  </section>
+
+  <!-- Recent Worksheet Assignments -->
+  <section>
+    <div class="nt-section-hdr">
+      <h2>Recent Worksheet Assignments</h2>
+      <a href="{{ url_for('psychologist_worksheets') }}" class="nt-back" style="margin:0;font-size:12px;">Manage all →</a>
+    </div>
+    {% if recent_assignments %}
+    <div class="nt-table-wrap">
+      <table class="nt-table">
+        <thead><tr><th>Worksheet</th><th>Patient</th><th>Assigned</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for a in recent_assignments %}
+          <tr>
+            <td style="font-weight:600;color:var(--nt-navy);">{{ a.worksheet_name }}</td>
+            <td>{{ a.patient.name if a.patient else '—' }}</td>
+            <td style="color:var(--nt-muted);font-size:12px;">{{ a.assigned_at.strftime('%d %b %Y') }}</td>
+            <td>
+              {% if a.is_completed %}
+              <span class="nt-badge nt-badge-green">Completed</span>
+              {% else %}
+              <span class="nt-badge nt-badge-amber">Pending</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p style="font-size:13px;color:var(--nt-muted);">No worksheets assigned yet. <a href="{{ url_for('psychologist_worksheets') }}" style="color:var(--nt-blue);">Assign one →</a></p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

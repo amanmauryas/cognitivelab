@@ -1,0 +1,109 @@
+{% extends "layout.html" %}
+
+{% block title %}Clinical Workspace | NeuroMetrics Provider Portal{% endblock %}
+
+{% block content %}
+<main class="page">
+    <section class="hero">
+        <h1>Data Handling &amp; Engineering Portal</h1>
+        <p>
+            A unified workspace for technical teams to collaborate with psychologists and cognitive science experts.
+        </p>
+
+        <div class="actions">
+            <a class="button button-primary" href="#digital-assessments">Browse Clinical Tools</a>
+            {% if session.get("role") in ["patient", "user"] %}
+            <a class="button button-secondary" href="{{ url_for('patient_worksheets') }}">My Worksheets</a>
+            {% elif session.get("role") == "psychologist" %}
+            <a class="button button-secondary" href="{{ url_for('psychologist_worksheets') }}">Assign Worksheets</a>
+            {% endif %}
+        </div>
+    </section>
+
+    <section id="digital-assessments" class="section">
+        <div class="section-header">
+            <h2>Standardized Assessment & Evaluation</h2>
+        </div>
+
+        <style>
+            .tool-list {
+                list-style-type: none;
+                padding-left: 0;
+                margin-top: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .tool-list li {
+                margin-bottom: 0.75rem;
+                padding-bottom: 0.75rem;
+                border-bottom: 1px solid #edf2f7;
+            }
+
+            .tool-list li:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
+
+            .tool-list a {
+                color: #2b6cb0;
+                text-decoration: none;
+                font-weight: 500;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .tool-list a:hover {
+                color: #1a365d;
+            }
+
+            .tool-badge {
+                font-size: 0.75rem;
+                background: #e2e8f0;
+                color: #4a5568;
+                padding: 0.2rem 0.5rem;
+                border-radius: 4px;
+                text-transform: uppercase;
+                font-weight: 600;
+            }
+
+            .badge-ai {
+                background: #ebf4ff;
+                color: #3182ce;
+            }
+
+            .badge-neuro {
+                background: #e9d8fd;
+                color: #6b46c1;
+            }
+        </style>
+
+        <div class="experiment-grid">
+        <!-- Category 4: AI & ML Features -->
+            <article class="experiment-card">
+                <div>
+                    <div class="card-header">
+                        <h3>AI Clinical Assistants</h3>
+                    </div>
+                    <p class="category">Machine Learning Analytics</p>
+                    <p class="description">Advanced analytics for clinical notes, speech sentiment, and session
+                        transcripts.</p>
+                    <ul class="tool-list">
+                        <li><a href="#ai_transcript#">NLP Session Summarizer <span
+                                    class="tool-badge badge-ai">LLM</span></a></li>
+                        <li><a href="#ai_sentiment#">Vocal Affect Tracker <span class="tool-badge badge-ai">Audio
+                                    ML</span></a></li>
+                        <li><a href="#ai_risk#">Risk Marker Extraction <span
+                                    class="tool-badge badge-ai">Predictive</span></a></li>
+                    </ul>
+                </div>
+                <a class="button button-primary button-full" href="#category_ai_tools#">
+                    Open AI Dashboard <span class="material-symbols-outlined" aria-hidden="true">analytics</span>
+                </a>
+            </article>
+
+        </div>
+    </section>
+</main>
+{% endblock %}

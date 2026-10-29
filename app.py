@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-from pathlib import Path
 
 from flask import (
     Flask,
@@ -14,11 +13,16 @@ from flask import (
 )
 from flask.templating import DispatchingJinjaLoader
 
-from core.database import User, TestSession, TestTrial, db, init_db
+from config import Config
+from core.auth import is_patient_role, normalize_username
+from core.catalog import COGNITIVE_TASKS, DIAGNOSTIC_SCALES, WORKSHEETS
+from core.worksheets import WORKSHEET_METADATA, get_worksheet_definition
+from core.database import db, init_db
+from core.utils import generate_participant_id
+from models import DiagnosticAssessment, TestSession, TestTrial, User, WorksheetAssignment
 from core.admin import admin_bp
-from tests.stroop import stroop_bp
-
-BASE_DIR = Path(__file__).resolve().parent
+from cognitive.stroop import stroop_bp
+from diagnostics.routes import diagnostics_bp
 
 
 class BlueprintAwareDispatchingJinjaLoader(DispatchingJinjaLoader):
@@ -30,30 +34,9 @@ class BlueprintAwareDispatchingJinjaLoader(DispatchingJinjaLoader):
         yield from super()._iter_loaders(template)
 
 
-def normalize_username(username: str) -> str:
-    return username.strip().lower()
-
-
-def generate_participant_id(name: str, gender: str) -> str:
-    name_initial = name.strip()[:1].upper()
-    gender_initial = gender.strip()[:1].upper()
-    date_code = datetime.now().strftime("%y%m")
-    monthly_count = User.query.filter(
-        User.participant_id.like(f"__{date_code}%")
-    ).count()
-
-    serial_no = f"{monthly_count + 1:04d}"
-    return f"{name_initial}{gender_initial}{date_code}{serial_no}"
-
-
 def create_app() -> Flask:
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = "dev-stroop-secret-key"
-    app.config["SQLALCHEMY_DATABASE_URI"] = (
-        f"sqlite:///{BASE_DIR / 'data' / 'psychometrics.db'}"
-    )
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
+    app.config.from_object(Config)
     app.jinja_options = {
         **app.jinja_options,
         "loader": BlueprintAwareDispatchingJinjaLoader(app)
@@ -62,6 +45,7 @@ def create_app() -> Flask:
     init_db(app)
 
     app.register_blueprint(stroop_bp)
+    app.register_blueprint(diagnostics_bp)
     app.register_blueprint(admin_bp)
 
     @app.route("/create_admin")
@@ -93,7 +77,11 @@ def create_app() -> Flask:
 
     @app.route("/")
     def index():
-        return render_template("index.html")
+        return render_template(
+            "soft_tools.html",
+            cognitive_tasks=COGNITIVE_TASKS,
+            diagnostic_scales=DIAGNOSTIC_SCALES,
+        )
 
     @app.route("/register", methods=["GET", "POST"])
     def register():
@@ -121,6 +109,10 @@ def create_app() -> Flask:
                 flash("Please complete all required fields.", "error")
                 return render_template("register.html")
 
+            if role not in {"patient", "psychologist"}:
+                flash("Please choose a valid registration role.", "error")
+                return render_template("register.html")
+
             existing_user = User.query.filter_by(
                 username=username
             ).first()
@@ -137,7 +129,10 @@ def create_app() -> Flask:
                 flash("Please enter a valid age.", "error")
                 return render_template("register.html")
 
-            participant_id = generate_participant_id(name, gender)
+            monthly_count = User.query.filter(
+                User.participant_id.like(f"__{datetime.now().strftime('%y%m')}%")
+            ).count()
+            participant_id = generate_participant_id(name, gender, monthly_count)
 
             user = User(
                 name=name,
@@ -162,6 +157,8 @@ def create_app() -> Flask:
                 "success"
             )
 
+            if role == "psychologist":
+                return redirect(url_for("psychologist_dashboard"))
             return redirect(url_for("stroop.test"))
 
         return render_template("register.html")
@@ -191,7 +188,10 @@ def create_app() -> Flask:
             if user.role == "admin":
                 return redirect(url_for("admin.dashboard"))
 
-            return redirect(url_for("stroop.test"))
+            if user.role == "psychologist":
+                return redirect(url_for("psychologist_dashboard"))
+
+            return redirect(url_for("index"))
 
         return render_template("login.html")
 
@@ -221,11 +221,23 @@ def create_app() -> Flask:
             .all()
         )
 
+        diagnostic_results = (
+            DiagnosticAssessment.query
+            .filter_by(user_id=user.id)
+            .order_by(DiagnosticAssessment.completed_at.desc())
+            .all()
+        )
+
         return render_template(
             "profile.html",
             user=user,
-            results=results
+            results=results,
+            diagnostic_results=diagnostic_results,
         )
+
+    @app.route('/tech-intern')
+    def intern():
+        return render_template("aifeature.html")
 
     @app.route("/seed")
     def seed():
@@ -328,10 +340,190 @@ def create_app() -> Flask:
 
     @app.route("/soft_tools")
     def soft_tools():
-        return render_template("soft_tools.html")
+        return redirect(url_for("index"))
+
+    @app.route("/psychologist/dashboard")
+    def psychologist_dashboard():
+        psychologist_id = session.get("user_id")
+        if not psychologist_id or session.get("role") != "psychologist":
+            flash("Only psychologists can view the collection dashboard.", "error")
+            return redirect(url_for("index"))
+
+        patients = User.query.filter(User.role.in_(["patient", "user"])).order_by(User.name).all()
+        completed_sessions = (
+            TestSession.query.filter(TestSession.completed_at.isnot(None))
+            .order_by(TestSession.completed_at.desc())
+            .all()
+        )
+        assignments = (
+            WorksheetAssignment.query.filter_by(assigned_by_id=psychologist_id)
+            .order_by(WorksheetAssignment.assigned_at.desc())
+            .limit(8)
+            .all()
+        )
+        completed_diagnostics = (
+            DiagnosticAssessment.query
+            .order_by(DiagnosticAssessment.completed_at.desc())
+            .all()
+        )
+        return render_template(
+            "psychologist_dashboard.html",
+            patients=patients,
+            recent_sessions=completed_sessions[:8],
+            recent_diagnostics=completed_diagnostics[:8],
+            recent_assignments=assignments,
+            completed_session_count=len(completed_sessions),
+            completed_diagnostic_count=len(completed_diagnostics),
+            cognitive_tasks=COGNITIVE_TASKS,
+            diagnostic_scales=DIAGNOSTIC_SCALES,
+        )
+
+    @app.route("/worksheets")
+    def patient_worksheets():
+        user_id = session.get("user_id")
+        if not user_id or not is_patient_role(session.get("role")):
+            flash("Only patients can view assigned digital worksheets.", "error")
+            return redirect(url_for("login"))
+        assignments = WorksheetAssignment.query.filter_by(patient_id=user_id).order_by(WorksheetAssignment.assigned_at.desc()).all()
+        return render_template("worksheets.html", assignments=assignments)
+
+    @app.route("/psychologist/worksheets", methods=["GET", "POST"])
+    def psychologist_worksheets():
+        psychologist_id = session.get("user_id")
+        if not psychologist_id or session.get("role") != "psychologist":
+            flash("Only psychologists can assign digital worksheets.", "error")
+            return redirect(url_for("index"))
+
+        patients = User.query.filter(User.role.in_(["patient", "user"])).order_by(User.name).all()
+        worksheet_options = dict(WORKSHEETS)
+        if request.method == "POST":
+            patient_id = request.form.get("patient_id", type=int)
+            worksheet_key = request.form.get("worksheet")
+            patient = db.session.get(User, patient_id)
+            if not patient or not is_patient_role(patient.role) or worksheet_key not in worksheet_options:
+                flash("Choose a valid patient and worksheet.", "error")
+            else:
+                db.session.add(WorksheetAssignment(patient_id=patient.id, assigned_by_id=psychologist_id, worksheet_name=worksheet_options[worksheet_key], worksheet_key=worksheet_key))
+                db.session.commit()
+                flash(f"{worksheet_options[worksheet_key]} assigned to {patient.name}.", "success")
+                return redirect(url_for("psychologist_worksheets"))
+
+        assignments = WorksheetAssignment.query.filter_by(assigned_by_id=psychologist_id).order_by(WorksheetAssignment.assigned_at.desc()).all()
+        return render_template("psychologist_worksheets.html", patients=patients, assignments=assignments, worksheet_options=worksheet_options)
+
+
+    @app.route("/worksheets/start/<worksheet_key>", methods=["POST"])
+    def start_self_worksheet(worksheet_key: str):
+        user_id = session.get("user_id")
+        if not user_id or not is_patient_role(session.get("role")):
+            flash("Please log in as a patient to access digital worksheets.", "error")
+            return redirect(url_for("login"))
+
+        worksheet_options = dict(WORKSHEETS)
+        if worksheet_key not in worksheet_options:
+            flash("Invalid worksheet type requested.", "error")
+            return redirect(url_for("patient_worksheets"))
+
+        assignment = WorksheetAssignment(
+            patient_id=user_id,
+            assigned_by_id=user_id,
+            worksheet_key=worksheet_key,
+            worksheet_name=worksheet_options[worksheet_key],
+        )
+        db.session.add(assignment)
+        db.session.commit()
+        return redirect(url_for("fill_worksheet", assignment_id=assignment.id))
+
+    @app.route("/worksheets/<int:assignment_id>")
+    def fill_worksheet(assignment_id: int):
+        user_id = session.get("user_id")
+        user_role = session.get("role")
+        if not user_id:
+            flash("Please log in first.", "error")
+            return redirect(url_for("login"))
+
+        assignment = db.session.get(WorksheetAssignment, assignment_id)
+        if not assignment:
+            flash("Worksheet assignment not found.", "error")
+            return redirect(url_for("patient_worksheets"))
+
+        if is_patient_role(user_role) and assignment.patient_id != user_id:
+            flash("Unauthorized access to this worksheet.", "error")
+            return redirect(url_for("patient_worksheets"))
+
+        key = assignment.worksheet_key
+        if not key:
+            for k, name in WORKSHEETS:
+                if name.lower() in assignment.worksheet_name.lower():
+                    key = k
+                    break
+            key = key or "thought_record"
+
+        definition = get_worksheet_definition(key) or get_worksheet_definition("thought_record")
+        edit_mode = request.args.get("edit") == "1"
+        current_responses = assignment.responses or {}
+
+        return render_template(
+            "worksheet_form.html",
+            assignment=assignment,
+            definition=definition,
+            current_responses=current_responses,
+            edit_mode=edit_mode,
+        )
+
+    @app.route("/worksheets/<int:assignment_id>/submit", methods=["POST"])
+    def submit_worksheet(assignment_id: int):
+        user_id = session.get("user_id")
+        user_role = session.get("role")
+        if not user_id:
+            flash("Please log in first.", "error")
+            return redirect(url_for("login"))
+
+        assignment = db.session.get(WorksheetAssignment, assignment_id)
+        if not assignment:
+            flash("Worksheet assignment not found.", "error")
+            return redirect(url_for("patient_worksheets"))
+
+        if is_patient_role(user_role) and assignment.patient_id != user_id:
+            flash("Unauthorized to submit this worksheet.", "error")
+            return redirect(url_for("patient_worksheets"))
+
+        responses = {}
+        for key in request.form:
+            values = request.form.getlist(key)
+            if len(values) > 1:
+                responses[key] = values
+            else:
+                responses[key] = request.form.get(key)
+
+        assignment.responses = responses
+        assignment.completed_at = datetime.utcnow()
+        db.session.commit()
+
+        flash(f"{assignment.worksheet_name} completed and saved successfully.", "success")
+        return redirect(url_for("fill_worksheet", assignment_id=assignment.id))
+
+    @app.route("/psychologist/worksheets/<int:assignment_id>/notes", methods=["POST"])
+    def save_worksheet_notes(assignment_id: int):
+        user_id = session.get("user_id")
+        user_role = session.get("role")
+        if not user_id or user_role not in ["psychologist", "admin"]:
+            flash("Only clinicians can add clinical notes.", "error")
+            return redirect(url_for("index"))
+
+        assignment = db.session.get(WorksheetAssignment, assignment_id)
+        if not assignment:
+            flash("Worksheet not found.", "error")
+            return redirect(url_for("psychologist_dashboard"))
+
+        notes = request.form.get("notes", "").strip()
+        assignment.notes = notes
+        db.session.commit()
+
+        flash("Clinical notes updated successfully.", "success")
+        return redirect(url_for("fill_worksheet", assignment_id=assignment.id))
 
     return app
-
 
 if __name__ == "__main__":
     app = create_app()

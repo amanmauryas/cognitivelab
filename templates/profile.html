@@ -23,19 +23,22 @@
           </div>
         </div>
       </div>
-      <div class="grid grid-cols-3 divide-x divide-outline-variant border-t lg:border-t-0 pt-lg lg:pt-0">
+      <div class="grid grid-cols-4 divide-x divide-outline-variant border-t lg:border-t-0 pt-lg lg:pt-0">
         <div class="px-lg first:pl-0">
           <span class="font-label-caps text-label-caps text-outline block mb-xs">Age</span>
           <span class="font-data-mono text-data-mono text-xl text-on-surface">{{ user.age }}</span>
         </div>
         <div class="px-lg">
           <span class="font-label-caps text-label-caps text-outline block mb-xs">Gender</span>
-          <span class="font-body-sm text-body-sm font-medium text-on-surface">{{ user.gender | replace("_", " ") | title
-            }}</span>
+          <span class="font-body-sm text-body-sm font-medium text-on-surface">{{ user.gender | replace("_", " ") | title }}</span>
+        </div>
+        <div class="px-lg">
+          <span class="font-label-caps text-label-caps text-outline block mb-xs">Cognitive</span>
+          <span class="font-data-mono text-data-mono text-xl text-on-surface">{{ results | length }}</span>
         </div>
         <div class="px-lg pr-0">
-          <span class="font-label-caps text-label-caps text-outline block mb-xs">Tests</span>
-          <span class="font-data-mono text-data-mono text-xl text-on-surface">{{ results | length }}</span>
+          <span class="font-label-caps text-label-caps text-outline block mb-xs">Diagnostics</span>
+          <span class="font-data-mono text-data-mono text-xl text-on-surface">{{ diagnostic_results | length }}</span>
         </div>
       </div>
     </div>
@@ -185,6 +188,62 @@
                   <span class="material-symbols-outlined text-3xl mb-sm">history</span>
                   <span>No experiment history found.</span>
                   <span class="mt-xs text-xs">Start a test to see results here.</span>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Diagnostic Assessments Section -->
+      <div class="flex items-end justify-between border-b border-outline-variant pb-xs pt-lg">
+        <h2 class="font-headline-sm text-headline-sm text-on-surface">Diagnostic Assessments</h2>
+        <a href="{{ url_for('diagnostics.index') }}" class="font-label-caps text-label-caps text-primary hover:underline">Take a Questionnaire →</a>
+      </div>
+
+      <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-outline-variant bg-surface-container-low">
+              <th class="font-label-caps text-label-caps text-on-surface-variant p-md">Scale</th>
+              <th class="font-label-caps text-label-caps text-on-surface-variant p-md">Completed</th>
+              <th class="font-label-caps text-label-caps text-on-surface-variant p-md">Score</th>
+              <th class="font-label-caps text-label-caps text-on-surface-variant p-md">Classification</th>
+              <th class="font-label-caps text-label-caps text-on-surface-variant p-md">Status</th>
+            </tr>
+          </thead>
+          <tbody class="font-data-mono text-data-mono text-on-surface">
+            {% for item in diagnostic_results %}
+            <tr class="border-b border-outline-variant hover:bg-surface-container-highest transition-colors">
+              <td class="p-md font-body-sm font-semibold text-primary">
+                {{ item.scale_name }}
+              </td>
+              <td class="p-md text-on-surface-variant text-sm">
+                {{ item.completed_at.strftime("%Y-%m-%d %H:%M") if item.completed_at else "-" }}
+              </td>
+              <td class="p-md font-bold">
+                {{ item.total_score }} <span class="text-xs text-outline font-normal">/ {{ item.max_score }}</span>
+              </td>
+              <td class="p-md font-sans text-sm font-medium">
+                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-primary-container text-on-primary-container">
+                  {{ item.interpretation or "Evaluated" }}
+                </span>
+              </td>
+              <td class="p-md">
+                <span class="inline-flex items-center gap-xs text-[11px] px-2 py-1 rounded bg-secondary-container text-on-secondary-container">
+                  <span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>
+                  Completed
+                </span>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5" class="p-md text-center text-outline font-body-sm py-8">
+                <div class="flex flex-col items-center justify-center">
+                  <span class="material-symbols-outlined text-3xl mb-sm">assignment</span>
+                  <span>No diagnostic scale assessments completed yet.</span>
+                  <a href="{{ url_for('diagnostics.index') }}" class="mt-xs text-xs text-primary font-semibold hover:underline">Browse diagnostic questionnaires</a>
                 </div>
               </td>
             </tr>

@@ -1,174 +1,413 @@
 {% extends "layout.html" %}
 
-{% block title %}Clinical Workspace | NeuroMetrics Provider Portal{% endblock %}
+{% block title %}NeuroTrack — Cognitive Metrics Lab{% endblock %}
 
 {% block content %}
-<main class="page">
-    <section class="hero">
-        <h1>Clinical Assessment & Therapy Toolkit</h1>
-        <p>
-            A centralized, scalable interface for administering psychometric evaluations, computerized cognitive tests,
-            therapeutic worksheets, and AI-assisted behavioral analysis.
-        </p>
-        <div class="actions">
-            <a class="button button-primary" href="#digital-assessments">Browse Clinical Tools</a>
-            <a class="button button-secondary" href="#patient_dashboard#">Patient Analytics</a>
+
+<style>
+  :root {
+    --nt-navy:    #0f2044;
+    --nt-blue:    #1d4ed8;
+    --nt-blue-lt: #3b82f6;
+    --nt-teal:    #0d9488;
+    --nt-purple:  #7c3aed;
+    --nt-gray-bg: #F7F8FA;
+    --nt-surface: #ffffff;
+    --nt-border:  #e3e7ee;
+    --nt-text:    #111827;
+    --nt-muted:   #6b7280;
+    --nt-muted2:  #9ca3af;
+    --nt-card-sh: 0 1px 3px rgba(15,32,68,.06), 0 4px 16px rgba(15,32,68,.04);
+    --nt-card-sh-hover: 0 4px 12px rgba(15,32,68,.10), 0 12px 40px rgba(15,32,68,.07);
+  }
+  body { background: var(--nt-gray-bg); }
+
+  .nt-eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; letter-spacing: .09em;
+    text-transform: uppercase; color: var(--nt-blue);
+  }
+  .nt-eyebrow::before {
+    content: ""; width: 16px; height: 2px; border-radius: 2px;
+    background: var(--nt-blue); flex-shrink: 0;
+  }
+
+  .nt-page { width: min(100%, 1200px); margin: 0 auto; padding: 0 24px 96px; }
+
+  /* ── Hero ────────────────────────────────── */
+  .nt-hero {
+    padding: 80px 0 72px;
+    display: grid; grid-template-columns: 1fr 420px;
+    gap: 64px; align-items: center;
+  }
+  .nt-hero-h1 {
+    margin: 0 0 20px;
+    font-size: clamp(36px, 4.5vw, 54px); font-weight: 800;
+    line-height: 1.1; letter-spacing: -.02em; color: var(--nt-navy);
+  }
+  .nt-hero-h1 .gradient-text {
+    background: linear-gradient(135deg, #1d4ed8 0%, #0d9488 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .nt-hero-sub { margin: 0 0 36px; font-size: 17px; line-height: 1.7; color: var(--nt-muted); max-width: 520px; }
+  .nt-hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+  /* ── Buttons ─────────────────────────────── */
+  .nt-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 7px; border-radius: 8px; font-size: 14px; font-weight: 650;
+    line-height: 1; padding: 12px 22px; border: 1.5px solid transparent;
+    transition: all 180ms ease; cursor: pointer; text-decoration: none; white-space: nowrap;
+  }
+  .nt-btn-primary { background: var(--nt-navy); color: #fff; border-color: var(--nt-navy); }
+  .nt-btn-primary:hover { background: #1a3566; border-color: #1a3566; box-shadow: 0 4px 14px rgba(15,32,68,.3); transform: translateY(-1px); }
+  .nt-btn-secondary { background: transparent; color: var(--nt-navy); border-color: var(--nt-border); }
+  .nt-btn-secondary:hover { background: #fff; border-color: #c0c8d8; box-shadow: 0 2px 8px rgba(15,32,68,.08); }
+
+  /* ── Hero Panel ──────────────────────────── */
+  .nt-hero-panel { background: var(--nt-surface); border: 1px solid var(--nt-border); border-radius: 16px; padding: 28px; box-shadow: var(--nt-card-sh); }
+  .nt-panel-title { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--nt-muted2); margin: 0 0 20px; }
+  .nt-stat-row { display: flex; flex-direction: column; gap: 14px; }
+  .nt-stat-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; background: var(--nt-gray-bg); border-radius: 10px; border: 1px solid var(--nt-border); }
+  .nt-stat-item-left { display: flex; align-items: center; gap: 12px; }
+  .nt-stat-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .nt-stat-icon.blue   { background: #dbeafe; color: var(--nt-blue); }
+  .nt-stat-icon.teal   { background: #ccfbf1; color: var(--nt-teal); }
+  .nt-stat-icon.purple { background: #ede9fe; color: var(--nt-purple); }
+  .nt-stat-icon.navy   { background: #e0e7ff; color: var(--nt-navy); }
+  .nt-stat-label { font-size: 13px; font-weight: 500; color: var(--nt-text); display: block; }
+  .nt-stat-sub   { font-size: 11px; color: var(--nt-muted); display: block; margin-top: 1px; }
+  .nt-stat-value { font-size: 20px; font-weight: 800; color: var(--nt-navy); font-variant-numeric: tabular-nums; flex-shrink: 0; }
+  .nt-panel-badge { display: inline-flex; align-items: center; gap: 5px; margin-top: 18px; font-size: 11px; color: #16a34a; font-weight: 600; }
+  .nt-panel-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #16a34a; animation: pulse-dot 1.6s ease infinite; }
+  @keyframes pulse-dot { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.5; transform:scale(1.3); } }
+
+  /* ── Sections & Cards ────────────────────── */
+  .nt-section { margin-top: 72px; }
+  .nt-section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 32px; gap: 16px; }
+  .nt-section-title { margin: 8px 0 0; font-size: 28px; font-weight: 750; line-height: 1.2; color: var(--nt-navy); }
+  .nt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+  .nt-card {
+    background: var(--nt-surface); border: 1px solid var(--nt-border);
+    border-radius: 14px; padding: 26px 24px 22px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    gap: 20px; box-shadow: var(--nt-card-sh);
+    transition: box-shadow 200ms ease, border-color 200ms ease, transform 200ms ease;
+    position: relative; overflow: hidden;
+  }
+  .nt-card::after {
+    content: ""; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; border-radius: 14px 14px 0 0; opacity: 0; transition: opacity 200ms ease;
+  }
+  .nt-card.accent-blue::after   { background: linear-gradient(90deg, #1d4ed8, #3b82f6); }
+  .nt-card.accent-teal::after   { background: linear-gradient(90deg, #0d9488, #14b8a6); }
+  .nt-card.accent-purple::after { background: linear-gradient(90deg, #7c3aed, #a855f7); }
+  .nt-card:hover { border-color: #c5cde0; box-shadow: var(--nt-card-sh-hover); transform: translateY(-2px); }
+  .nt-card:hover::after { opacity: 1; }
+
+  .nt-card-header { display: flex; align-items: flex-start; gap: 14px; }
+  .nt-card-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .nt-card-icon.blue   { background: #dbeafe; color: #1d4ed8; }
+  .nt-card-icon.teal   { background: #ccfbf1; color: #0d9488; }
+  .nt-card-icon.purple { background: #ede9fe; color: #7c3aed; }
+  .nt-card-meta { flex: 1; }
+  .nt-card-category { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--nt-muted2); margin: 0 0 4px; }
+  .nt-card-title { font-size: 18px; font-weight: 700; color: var(--nt-navy); margin: 0; line-height: 1.25; }
+  .nt-card-desc  { font-size: 13.5px; color: var(--nt-muted); line-height: 1.6; margin: 0; }
+
+  /* Tool list */
+  .nt-tool-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .nt-tool-list li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border-radius: 8px; background: var(--nt-gray-bg); border: 1px solid var(--nt-border); font-size: 13px; }
+  .nt-tool-list a { color: var(--nt-text); text-decoration: none; font-weight: 500; flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .nt-tool-list a:hover { color: #1d4ed8; }
+  .nt-tool-list span.name { color: var(--nt-text); font-weight: 500; flex: 1; }
+
+  /* Badges */
+  .nt-badge { font-size: 9.5px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; padding: 3px 7px; border-radius: 4px; flex-shrink: 0; }
+  .nt-badge-blue   { background: #dbeafe; color: #1d4ed8; }
+  .nt-badge-teal   { background: #ccfbf1; color: #0f766e; }
+  .nt-badge-purple { background: #ede9fe; color: #6d28d9; }
+  .nt-badge-gray   { background: #f1f5f9; color: #64748b; }
+  .nt-badge-soon   { background: #fef9c3; color: #92400e; }
+  .nt-badge-green  { background: #dcfce7; color: #166534; }
+
+  /* Card footer */
+  .nt-card-action { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 16px; border-top: 1px solid var(--nt-border); margin-top: auto; }
+  .nt-card-count { font-size: 11px; color: var(--nt-muted2); font-weight: 500; }
+  .nt-link-btn { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 650; color: #1d4ed8; text-decoration: none; padding: 8px 16px; border-radius: 7px; border: 1.5px solid #bfdbfe; background: #eff6ff; transition: all 160ms ease; white-space: nowrap; }
+  .nt-link-btn:hover { background: #dbeafe; border-color: #93c5fd; }
+  .nt-link-btn.teal   { color: #0d9488; border-color: #99f6e4; background: #f0fdfa; }
+  .nt-link-btn.teal:hover { background: #ccfbf1; border-color: #5eead4; }
+  .nt-link-btn.purple { color: #7c3aed; border-color: #ddd6fe; background: #faf5ff; }
+  .nt-link-btn.purple:hover { background: #ede9fe; border-color: #c4b5fd; }
+
+  /* Feature strip */
+  .nt-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--nt-border); border-radius: 14px; overflow: hidden; border: 1px solid var(--nt-border); margin-top: 72px; }
+  .nt-strip-item { background: var(--nt-surface); padding: 28px 24px; display: flex; gap: 16px; align-items: flex-start; }
+  .nt-strip-icon { width: 40px; height: 40px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; background: var(--nt-gray-bg); border: 1px solid var(--nt-border); color: var(--nt-navy); }
+  .nt-strip-text h3 { margin: 0 0 4px; font-size: 15px; font-weight: 700; color: var(--nt-navy); }
+  .nt-strip-text p  { margin: 0; font-size: 13px; color: var(--nt-muted); line-height: 1.55; }
+
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .nt-hero { grid-template-columns: 1fr; gap: 40px; }
+    .nt-hero-panel { display: none; }
+    .nt-grid { grid-template-columns: repeat(2, 1fr); }
+    .nt-strip { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .nt-hero { padding: 48px 0 56px; }
+    .nt-hero-h1 { font-size: 32px; }
+    .nt-grid { grid-template-columns: 1fr; }
+    .nt-section-header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+
+<div class="nt-page">
+
+  <!-- HERO -->
+  <section class="nt-hero">
+    <div class="nt-hero-left">
+      <p class="nt-eyebrow" style="margin-bottom:20px;">Cognitive Metrics Lab</p>
+      <h1 class="nt-hero-h1">
+        Measure behavior.<br>
+        <span class="gradient-text">Understand cognition.</span>
+      </h1>
+      <p class="nt-hero-sub">
+        A research platform for computerized behavioral experiments — measuring
+        reaction time, attention, inhibition, working memory, and emotional
+        regulation using validated psychometric scales.
+      </p>
+      <div class="nt-hero-actions">
+        {% if session.get("user_id") %}
+          {% if session.get("role") in ["patient", "user"] %}
+            <a class="nt-btn nt-btn-primary" href="{{ url_for('stroop.test') }}">
+              <span class="material-symbols-outlined" style="font-size:16px">play_arrow</span>
+              Start Cognitive Task
+            </a>
+            <a class="nt-btn nt-btn-secondary" href="{{ url_for('patient_worksheets') }}">My Worksheets</a>
+          {% elif session.get("role") == "psychologist" %}
+            <a class="nt-btn nt-btn-primary" href="{{ url_for('psychologist_dashboard') }}">
+              <span class="material-symbols-outlined" style="font-size:16px">dashboard</span>
+              Open Dashboard
+            </a>
+            <a class="nt-btn nt-btn-secondary" href="{{ url_for('diagnostics.index') }}">Diagnostic Scales</a>
+          {% else %}
+            <a class="nt-btn nt-btn-primary" href="#assessment-tools">Browse Clinical Tools</a>
+          {% endif %}
+        {% else %}
+          <a class="nt-btn nt-btn-primary" href="{{ url_for('register') }}">
+            <span class="material-symbols-outlined" style="font-size:16px">person_add</span>
+            Join as Participant
+          </a>
+          <a class="nt-btn nt-btn-secondary" href="#assessment-tools">Explore Tools</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Stats panel (hidden on mobile) -->
+    <div class="nt-hero-panel">
+      <p class="nt-panel-title">Platform Overview</p>
+      <div class="nt-stat-row">
+        <div class="nt-stat-item">
+          <div class="nt-stat-item-left">
+            <div class="nt-stat-icon blue"><span class="material-symbols-outlined">psychology</span></div>
+            <div><span class="nt-stat-label">Cognitive Tasks</span><span class="nt-stat-sub">Stroop, Flanker, N-Back</span></div>
+          </div>
+          <span class="nt-stat-value">6</span>
         </div>
-    </section>
-
-    <section id="digital-assessments" class="section">
-        <div class="section-header">
-            <h2>Standardized Assessment & Evaluation</h2>
+        <div class="nt-stat-item">
+          <div class="nt-stat-item-left">
+            <div class="nt-stat-icon teal"><span class="material-symbols-outlined">clinical_notes</span></div>
+            <div><span class="nt-stat-label">Diagnostic Scales</span><span class="nt-stat-sub">PHQ-9, GAD-7, Y-BOCS</span></div>
+          </div>
+          <span class="nt-stat-value">3</span>
         </div>
-
-        <style>
-            .tool-list {
-                list-style-type: none;
-                padding-left: 0;
-                margin-top: 1.5rem;
-                margin-bottom: 1.5rem;
-            }
-
-            .tool-list li {
-                margin-bottom: 0.75rem;
-                padding-bottom: 0.75rem;
-                border-bottom: 1px solid #edf2f7;
-            }
-
-            .tool-list li:last-child {
-                border-bottom: none;
-                margin-bottom: 0;
-                padding-bottom: 0;
-            }
-
-            .tool-list a {
-                color: #2b6cb0;
-                text-decoration: none;
-                font-weight: 500;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .tool-list a:hover {
-                color: #1a365d;
-            }
-
-            .tool-badge {
-                font-size: 0.75rem;
-                background: #e2e8f0;
-                color: #4a5568;
-                padding: 0.2rem 0.5rem;
-                border-radius: 4px;
-                text-transform: uppercase;
-                font-weight: 600;
-            }
-
-            .badge-ai {
-                background: #ebf4ff;
-                color: #3182ce;
-            }
-
-            .badge-neuro {
-                background: #e9d8fd;
-                color: #6b46c1;
-            }
-        </style>
-
-        <div class="experiment-grid">
-
-            <!-- Category 1: Symptom Baselines -->
-            <article class="experiment-card">
-                <div>
-                    <div class="card-header">
-                        <h3>Diagnostic Scales</h3>
-                    </div>
-                    <p class="category">Symptom Tracking</p>
-                    <p class="description">Standardized psychometrics for baseline establishment and progress
-                        monitoring.</p>
-                    <ul class="tool-list">
-                        <li><a href="#tool_phq9#">PHQ-9 (Depression) <span
-                                    class="tool-badge">Auto-Scored</span></a></li>
-                        <li><a href="#tool_gad7#">GAD-7 (Anxiety) <span
-                                    class="tool-badge">Auto-Scored</span></a></li>
-                        <li><a href="#tool_ybocs#">Y-BOCS (OCD) <span
-                                    class="tool-badge">Interactive</span></a></li>
-                    </ul>
-                </div>
-                <a class="button button-primary button-full" href="#category_diagnostics#">
-                    Deploy Scale <span class="material-symbols-outlined" aria-hidden="true">send</span>
-                </a>
-            </article>
-
-            <!-- Category 2: Neurocognitive Processing -->
-            <article class="experiment-card">
-                <div>
-                    <div class="card-header">
-                        <h3>Cognitive Tasks</h3>
-                    </div>
-                    <p class="category">Computational Neuroscience</p>
-                    <p class="description">Digital paradigms measuring executive function, working memory, and
-                        inhibition.</p>
-                    <ul class="tool-list">
-                        <li><a href="#task_nback#">N-Back Task <span
-                                    class="tool-badge badge-neuro">Memory</span></a></li>
-                        <li><a href="#task_wcst#">Wisconsin Card Sort <span
-                                    class="tool-badge badge-neuro">Flexibility</span></a></li>
-                        <li><a href="#task_flanker#">Flanker Task <span
-                                    class="tool-badge badge-neuro">Attention</span></a></li>
-                    </ul>
-                </div>
-                <a class="button button-primary button-full" href="#category_cognitive#">
-                    Assign to Patient <span class="material-symbols-outlined" aria-hidden="true">send</span>
-                </a>
-            </article>
-
-            <!-- Category 3: Therapeutic Interventions -->
-            <article class="experiment-card">
-                <div>
-                    <div class="card-header">
-                        <h3>Digital Worksheets</h3>
-                    </div>
-                    <p class="category">CBT & DBT Interventions</p>
-                    <p class="description">Interactive cognitive restructuring and emotional regulation logs.</p>
-                    <ul class="tool-list">
-                        <li><a href="#sheet_cbt_thought#">Interactive Thought Record <span
-                                    class="tool-badge">CBT</span></a></li>
-                        <li><a href="#sheet_dbt_diary#">Daily Diary Card <span
-                                    class="tool-badge">DBT</span></a></li>
-                        <li><a href="#sheet_behavioral#">Behavioral Chain Analysis <span
-                                    class="tool-badge">DBT</span></a></li>
-                    </ul>
-                </div>
-                <a class="button button-primary button-full" href="#category_worksheets#">
-                    Review Submissions <span class="material-symbols-outlined" aria-hidden="true">folder_open</span>
-                </a>
-            </article>
-
-            <!-- Category 4: AI & ML Features -->
-            <article class="experiment-card">
-                <div>
-                    <div class="card-header">
-                        <h3>AI Clinical Assistants</h3>
-                    </div>
-                    <p class="category">Machine Learning Analytics</p>
-                    <p class="description">Advanced analytics for clinical notes, speech sentiment, and session
-                        transcripts.</p>
-                    <ul class="tool-list">
-                        <li><a href="#ai_transcript#">NLP Session Summarizer <span
-                                    class="tool-badge badge-ai">LLM</span></a></li>
-                        <li><a href="#ai_sentiment#">Vocal Affect Tracker <span
-                                    class="tool-badge badge-ai">Audio ML</span></a></li>
-                        <li><a href="#ai_risk#">Risk Marker Extraction <span
-                                    class="tool-badge badge-ai">Predictive</span></a></li>
-                    </ul>
-                </div>
-                <a class="button button-primary button-full" href="#category_ai_tools#">
-                    Open AI Dashboard <span class="material-symbols-outlined" aria-hidden="true">analytics</span>
-                </a>
-            </article>
-
+        <div class="nt-stat-item">
+          <div class="nt-stat-item-left">
+            <div class="nt-stat-icon purple"><span class="material-symbols-outlined">edit_note</span></div>
+            <div><span class="nt-stat-label">Digital Worksheets</span><span class="nt-stat-sub">CBT, DBT, Behavioral</span></div>
+          </div>
+          <span class="nt-stat-value">5</span>
         </div>
-    </section>
-</main>
+        <div class="nt-stat-item">
+          <div class="nt-stat-item-left">
+            <div class="nt-stat-icon navy"><span class="material-symbols-outlined">fact_check</span></div>
+            <div><span class="nt-stat-label">Research Grade</span><span class="nt-stat-sub">Validated paradigms</span></div>
+          </div>
+          <span class="nt-stat-value" style="font-size:13px;font-weight:700;color:#16a34a;">Verified</span>
+        </div>
+      </div>
+      <div class="nt-panel-badge">Platform operational</div>
+    </div>
+  </section>
+
+  <!-- ASSESSMENT TOOLS -->
+  <section id="assessment-tools" class="nt-section">
+    <div class="nt-section-header">
+      <div>
+        <p class="nt-eyebrow">Assessment Suite</p>
+        <h2 class="nt-section-title">Standardized Clinical Tools</h2>
+      </div>
+    </div>
+    <div class="nt-grid">
+
+      <!-- Diagnostic Scales card -->
+      <article class="nt-card accent-teal">
+        <div>
+          <div class="nt-card-header">
+            <div class="nt-card-icon teal"><span class="material-symbols-outlined">clinical_notes</span></div>
+            <div class="nt-card-meta">
+              <p class="nt-card-category">Symptom Tracking</p>
+              <h3 class="nt-card-title">Diagnostic Scales</h3>
+            </div>
+          </div>
+          <p class="nt-card-desc" style="margin-top:14px;">
+            Standardized psychometrics for baseline symptom assessment and longitudinal progress monitoring.
+          </p>
+          <ul class="nt-tool-list" style="margin-top:16px;">
+            {% for scale in diagnostic_scales %}
+            <li>
+              {% if scale.status == "available" %}
+              <a href="{{ url_for('diagnostics.take', scale_id=scale.id) }}">
+                <span class="name">{{ scale.name }}</span>
+                <span class="nt-badge nt-badge-green">Available</span>
+              </a>
+              {% else %}
+              <span class="name">{{ scale.name }}</span>
+              <span class="nt-badge nt-badge-gray">{{ scale.status | default("Planned") | title }}</span>
+              {% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="nt-card-action">
+          <span class="nt-card-count">{{ diagnostic_scales | length }} scales</span>
+          <a class="nt-link-btn teal" href="{{ url_for('diagnostics.index') }}">
+            Open Scales <span class="material-symbols-outlined" style="font-size:14px">arrow_forward</span>
+          </a>
+        </div>
+      </article>
+
+      <!-- Cognitive Tasks card -->
+      <article class="nt-card accent-blue">
+        <div>
+          <div class="nt-card-header">
+            <div class="nt-card-icon blue"><span class="material-symbols-outlined">psychology</span></div>
+            <div class="nt-card-meta">
+              <p class="nt-card-category">Computational Neuroscience</p>
+              <h3 class="nt-card-title">Cognitive Tasks</h3>
+            </div>
+          </div>
+          <p class="nt-card-desc" style="margin-top:14px;">
+            Digital paradigms measuring executive function, attention, working memory, and inhibitory control with millisecond precision.
+          </p>
+          <ul class="nt-tool-list" style="margin-top:16px;">
+            {% for task in cognitive_tasks %}
+            <li>
+              {% if task.endpoint and session.get("role") in ["patient", "user"] %}
+              <a href="{{ url_for(task.endpoint) }}">
+                <span class="name">{{ task.name }}</span>
+                {% if task.status == "available" %}<span class="nt-badge nt-badge-blue">Active</span>
+                {% else %}<span class="nt-badge nt-badge-soon">Soon</span>{% endif %}
+              </a>
+              {% else %}
+              <span class="name">{{ task.name }}</span>
+              {% if task.status == "available" %}<span class="nt-badge nt-badge-blue">Available</span>
+              {% else %}<span class="nt-badge nt-badge-soon">Soon</span>{% endif %}
+              {% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        <div class="nt-card-action">
+          <span class="nt-card-count">{{ cognitive_tasks | length }} paradigms</span>
+          {% if session.get("role") in ["patient", "user"] %}
+          <a class="nt-link-btn" href="{{ url_for('stroop.test') }}">
+            Start Stroop <span class="material-symbols-outlined" style="font-size:14px">arrow_forward</span>
+          </a>
+          {% else %}
+          <a class="nt-link-btn" href="{{ url_for('login') }}">
+            Login to Access <span class="material-symbols-outlined" style="font-size:14px">arrow_forward</span>
+          </a>
+          {% endif %}
+        </div>
+      </article>
+
+      <!-- Digital Worksheets card -->
+      <article class="nt-card accent-purple">
+        <div>
+          <div class="nt-card-header">
+            <div class="nt-card-icon purple"><span class="material-symbols-outlined">edit_note</span></div>
+            <div class="nt-card-meta">
+              <p class="nt-card-category">CBT &amp; DBT Interventions</p>
+              <h3 class="nt-card-title">Digital Worksheets</h3>
+            </div>
+          </div>
+          <p class="nt-card-desc" style="margin-top:14px;">
+            Interactive cognitive restructuring tools and emotional regulation logs, clinician-assigned or self-initiated.
+          </p>
+          <ul class="nt-tool-list" style="margin-top:16px;">
+            <li><span class="name">Interactive Thought Record</span><span class="nt-badge nt-badge-purple">CBT</span></li>
+            <li><span class="name">Daily Diary Card</span><span class="nt-badge nt-badge-purple">DBT</span></li>
+            <li><span class="name">Behavioral Chain Analysis</span><span class="nt-badge nt-badge-purple">DBT</span></li>
+            <li><span class="name">Activity Scheduling Log</span><span class="nt-badge nt-badge-gray">CBT</span></li>
+            <li><span class="name">Safety Planning Sheet</span><span class="nt-badge nt-badge-gray">Crisis</span></li>
+          </ul>
+        </div>
+        <div class="nt-card-action">
+          <span class="nt-card-count">5 worksheet types</span>
+          {% if session.get("role") in ["patient", "user"] %}
+          <a class="nt-link-btn purple" href="{{ url_for('patient_worksheets') }}">
+            My Worksheets <span class="material-symbols-outlined" style="font-size:14px">arrow_forward</span>
+          </a>
+          {% elif session.get("role") == "psychologist" %}
+          <a class="nt-link-btn purple" href="{{ url_for('psychologist_worksheets') }}">
+            Assign Worksheets <span class="material-symbols-outlined" style="font-size:14px">arrow_forward</span>
+          </a>
+          {% else %}
+          <a class="nt-link-btn purple" href="{{ url_for('login') }}">
+            Login to Access <span class="material-symbols-outlined" style="font-size:14px">arrow_forward</span>
+          </a>
+          {% endif %}
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- FEATURE STRIP -->
+  <div class="nt-strip">
+    <div class="nt-strip-item">
+      <div class="nt-strip-icon"><span class="material-symbols-outlined">verified</span></div>
+      <div class="nt-strip-text">
+        <h3>Validated Instruments</h3>
+        <p>All scales are established, peer-reviewed clinical instruments used in published research.</p>
+      </div>
+    </div>
+    <div class="nt-strip-item">
+      <div class="nt-strip-icon"><span class="material-symbols-outlined">timer</span></div>
+      <div class="nt-strip-text">
+        <h3>Millisecond Precision</h3>
+        <p>Reaction times recorded at browser-native millisecond precision across all cognitive tasks.</p>
+      </div>
+    </div>
+    <div class="nt-strip-item">
+      <div class="nt-strip-icon"><span class="material-symbols-outlined">shield</span></div>
+      <div class="nt-strip-text">
+        <h3>Research Ethics</h3>
+        <p>Data collected under informed consent and used solely for behavioural and cognitive research.</p>
+      </div>
+    </div>
+  </div>
+
+  <p style="margin-top:40px; font-size:12px; color:#9ca3af; text-align:center; line-height:1.7; max-width:640px; margin-left:auto; margin-right:auto;">
+    This platform is for educational and research purposes only. Automated scores do not constitute
+    clinical diagnoses or medical evaluations. Always consult a licensed healthcare professional for clinical assessment.
+  </p>
+
+</div>
+
 {% endblock %}

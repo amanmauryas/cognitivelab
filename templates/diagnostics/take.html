@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+{% block title %}{{ scale.title or scale.name }} — NeuroTrack{% endblock %}
+{% block content %}
+<div class="nt-page-sm">
+  <div style="padding-top:40px;">
+    <a class="nt-back" href="{{ url_for('diagnostics.index') }}">
+      <span class="material-symbols-outlined" style="font-size:16px">arrow_back</span> Back to Scales
+    </a>
+
+    <div class="nt-card-flat" style="padding:36px;">
+      <!-- Header -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:24px;padding-bottom:24px;border-bottom:1px solid var(--nt-border);margin-bottom:32px;flex-wrap:wrap;">
+        <div style="flex:1;">
+          <p class="nt-eyebrow teal" style="margin-bottom:8px;">{{ scale.category or 'Diagnostic Scale' }}</p>
+          <h1 style="font-size:26px;font-weight:800;color:var(--nt-navy);margin:0 0 6px;">{{ scale.title or scale.name }}</h1>
+          <p style="font-size:13px;color:var(--nt-muted);margin:0;">{{ scale.description }}</p>
+        </div>
+        <div class="nt-participant-tag">
+          <span class="label">Participant</span>
+          <span class="value">{{ user.participant_id }}</span>
+        </div>
+      </div>
+
+      {% if scale.instructions %}
+      <div class="nt-instructions" style="margin-bottom:28px;">
+        {{ scale.instructions.text }}
+      </div>
+      {% endif %}
+
+      <form method="POST" action="{{ url_for('diagnostics.submit', scale_id=scale.id) }}" style="display:grid;gap:16px;">
+        {% for q in scale.questions %}
+        <fieldset style="border:1.5px solid var(--nt-border);border-radius:12px;padding:20px;background:var(--nt-gray-bg);">
+          <legend style="font-size:14px;font-weight:700;color:var(--nt-navy);padding:0 6px;">
+            <span style="color:var(--nt-teal);font-variant-numeric:tabular-nums;margin-right:4px;">{{ q.number }}.</span>
+            {{ q.text }}
+          </legend>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:14px;">
+            {% for opt in scale.response_scale %}
+            <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--nt-surface);border:1.5px solid var(--nt-border);border-radius:9px;cursor:pointer;font-size:13px;font-weight:500;color:var(--nt-text);transition:border-color 140ms ease;">
+              <input type="radio" name="{{ q.id }}" value="{{ opt.value }}" required
+                     {% if current_responses and current_responses.get(q.id) == opt.value %}checked{% endif %}
+                     style="accent-color:var(--nt-teal);width:15px;height:15px;">
+              {{ opt.label }}
+            </label>
+            {% endfor %}
+          </div>
+        </fieldset>
+        {% endfor %}
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-top:20px;border-top:1px solid var(--nt-border);margin-top:8px;">
+          <a href="{{ url_for('diagnostics.index') }}" style="font-size:13px;color:var(--nt-muted);">Cancel</a>
+          <button type="submit" class="nt-btn nt-btn-teal">
+            <span class="material-symbols-outlined" style="font-size:16px">check_circle</span>
+            Submit Assessment
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

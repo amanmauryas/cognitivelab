@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+{% block title %}Assign Worksheets — NeuroTrack{% endblock %}
+{% block content %}
+<div class="nt-page">
+  <div class="nt-page-header">
+    <div>
+      <p class="nt-eyebrow purple">Psychologist Clinical Portal</p>
+      <h1>Assign Digital Worksheets</h1>
+      <p>Assign CBT/DBT therapeutic exercises to your registered patients.</p>
+    </div>
+    <a class="nt-btn nt-btn-secondary nt-btn-sm" href="{{ url_for('psychologist_dashboard') }}">← Dashboard</a>
+  </div>
+
+  <div class="nt-2col" style="align-items:start;">
+    <!-- Assignment Form -->
+    <div class="nt-card-flat" style="padding:28px;">
+      <h2 style="font-size:17px;font-weight:700;color:var(--nt-navy);margin:0 0 4px;display:flex;align-items:center;gap:8px;">
+        <span class="material-symbols-outlined" style="color:var(--nt-purple);">add_task</span>
+        New Assignment
+      </h2>
+      <p style="font-size:12px;color:var(--nt-muted);margin:0 0 20px;">Select a patient and worksheet modality.</p>
+
+      <form method="POST" style="display:grid;gap:16px;">
+        <div class="nt-field">
+          <label for="patient_id">Select Patient</label>
+          <select class="nt-input" id="patient_id" name="patient_id" required>
+            <option value="">-- Choose a patient --</option>
+            {% for patient in patients %}
+            <option value="{{ patient.id }}">{{ patient.name }} ({{ patient.participant_id }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="nt-field">
+          <label for="worksheet">Worksheet Type</label>
+          <select class="nt-input" id="worksheet" name="worksheet" required>
+            <option value="">-- Choose a worksheet --</option>
+            {% for key, name in worksheet_options.items() %}
+            <option value="{{ key }}">{{ name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="nt-btn nt-btn-primary nt-btn-full">
+          <span class="material-symbols-outlined" style="font-size:16px">send</span>
+          Assign to Patient
+        </button>
+      </form>
+    </div>
+
+    <!-- Assignments Table -->
+    <div>
+      <div class="nt-section-hdr">
+        <h2>Assignment History</h2>
+        <span style="font-size:12px;color:var(--nt-muted2);">{{ assignments|length }} total</span>
+      </div>
+      {% if assignments %}
+      <div class="nt-table-wrap">
+        <table class="nt-table">
+          <thead>
+            <tr><th>Worksheet</th><th>Patient</th><th>Assigned</th><th>Status</th><th style="text-align:right;">Action</th></tr>
+          </thead>
+          <tbody>
+            {% for a in assignments %}
+            <tr>
+              <td style="font-weight:600;color:var(--nt-navy);">{{ a.worksheet_name }}</td>
+              <td>
+                <span style="font-weight:600;display:block;">{{ a.patient.name if a.patient else 'Unknown' }}</span>
+                <span style="font-size:11px;font-family:var(--font-mono);color:var(--nt-muted);">{{ a.patient.participant_id if a.patient else '' }}</span>
+              </td>
+              <td style="color:var(--nt-muted);font-size:12px;">{{ a.assigned_at.strftime('%Y-%m-%d') if a.assigned_at else '-' }}</td>
+              <td>
+                {% if a.is_completed %}
+                <span class="nt-badge nt-badge-green">Completed</span>
+                {% else %}
+                <span class="nt-badge nt-badge-amber">Pending</span>
+                {% endif %}
+              </td>
+              <td style="text-align:right;">
+                <a href="{{ url_for('fill_worksheet', assignment_id=a.id) }}" class="nt-btn nt-btn-secondary nt-btn-sm">
+                  Inspect & Notes →
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="nt-card-flat nt-empty">
+        <span class="icon material-symbols-outlined">assignment</span>
+        <h3>No assignments yet</h3>
+        <p>Use the form to assign a worksheet to a patient.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

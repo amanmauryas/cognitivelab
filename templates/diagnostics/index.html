@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block title %}Diagnostic Scales — NeuroTrack{% endblock %}
+{% block content %}
+<div class="nt-page-sm">
+  <div class="nt-page-header">
+    <div>
+      <p class="nt-eyebrow teal">Assessment Catalogue</p>
+      <h1>Diagnostic Scales</h1>
+      <p>Standardized behavioral and symptom questionnaires available for administration.</p>
+    </div>
+    <div class="nt-page-header-actions">
+      <a class="nt-btn nt-btn-secondary nt-btn-sm" href="{{ url_for('index') }}">← Home</a>
+    </div>
+  </div>
+
+  <div class="nt-2col-eq" style="gap:20px;">
+    {% for scale in scales %}
+    <article class="nt-card" style="display:flex;flex-direction:column;justify-content:space-between;gap:16px;">
+      <div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;">
+          <h2 style="font-size:18px;font-weight:700;color:var(--nt-navy);margin:0;">{{ scale.name }}</h2>
+          {% if scale.status == 'available' %}
+          <span class="nt-badge nt-badge-green">Available</span>
+          {% else %}
+          <span class="nt-badge nt-badge-gray">{{ scale.status | title }}</span>
+          {% endif %}
+        </div>
+        <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--nt-teal);margin:0 0 8px;">{{ scale.category }}</p>
+        <p style="font-size:13px;color:var(--nt-muted);line-height:1.6;margin:0;">{{ scale.description or 'Planned clinical scale.' }}</p>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--nt-border);">
+        {% if scale.status == 'available' %}
+        <a href="{{ url_for('diagnostics.take', scale_id=scale.id) }}" class="nt-btn nt-btn-teal nt-btn-sm">
+          Start Questionnaire
+          <span class="material-symbols-outlined" style="font-size:14px">arrow_forward</span>
+        </a>
+        <a href="{{ url_for('diagnostics.scale_json', scale_id=scale.id) }}" target="_blank"
+           style="font-size:11px;color:var(--nt-muted);text-decoration:underline;">JSON Schema</a>
+        {% else %}
+        <span style="font-size:12px;color:var(--nt-muted2);font-style:italic;">Specification pending</span>
+        {% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
